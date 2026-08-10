@@ -9,6 +9,7 @@
   html, body { height: 100%; }
 
   body {
+    min-height: 100vh;
     min-height: 100svh;
     display: flex;
     justify-content: center;
@@ -181,8 +182,8 @@
   .control[data-side="c"] { --accent: #22c55e; }
 
   @media (min-width: 900px) and (orientation: landscape) {
-    body.page-mode { height: 100svh; overflow: hidden; padding: 16px; }
-    body.page-mode main { height: calc(100svh - 32px); max-height: calc(100svh - 32px); display: flex; flex-direction: column; padding: 20px 34px 22px; overflow: hidden; }
+    body.page-mode { height: 100vh; height: 100svh; overflow: hidden; padding: 16px; }
+    body.page-mode main { height: calc(100vh - 32px); height: calc(100svh - 32px); max-height: calc(100vh - 32px); max-height: calc(100svh - 32px); display: flex; flex-direction: column; padding: 20px 34px 22px; overflow: hidden; }
     .page-head { flex: none; margin-bottom: 10px; }
     .layout { flex: 1; min-height: 0; margin-top: 0; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(300px, 1fr); grid-template-rows: minmax(0, 1fr); gap: 0 44px; }
     .stage { height: 100%; min-height: 0; display: flex; align-items: center; justify-content: center; }
@@ -209,9 +210,10 @@
     .card .fix { font-size: 16px; margin-bottom: 3px; }
     .card p { font-size: 12px; }
 
-    body.page-mode { height: 100svh; overflow: hidden; }
+    body.page-mode { height: 100vh; height: 100svh; overflow: hidden; }
     body.page-mode main {
-      height: calc(100svh - 16px); max-height: calc(100svh - 16px);
+      height: calc(100vh - 16px); height: calc(100svh - 16px);
+      max-height: calc(100vh - 16px); max-height: calc(100svh - 16px);
       display: flex; flex-direction: column; overflow: hidden; padding: 10px 14px 12px;
     }
     .page-head { flex: none; margin-bottom: 4px; }
@@ -222,7 +224,7 @@
     .back { padding: 4px 11px; font-size: 12px; }
 
     .layout { flex: 1; min-height: 0; margin-top: 0; display: flex; flex-direction: column; gap: 0; overflow: hidden; }
-    .stage { flex: 1 1 0; min-height: 36svh; display: flex; align-items: center; justify-content: center; }
+    .stage { flex: 1 1 0; min-height: 32vh; min-height: 36svh; display: flex; align-items: center; justify-content: center; }
     svg { width: 100%; height: 100%; max-width: 100%; max-height: 100%; }
 
     .panel { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
@@ -246,7 +248,7 @@
   @media (max-width: 400px) {
     body { padding: 6px; }
     main { padding: 10px 10px 12px; border-radius: 14px; }
-    body.page-mode main { height: calc(100svh - 12px); max-height: calc(100svh - 12px); }
+    body.page-mode main { height: calc(100vh - 12px); height: calc(100svh - 12px); max-height: calc(100vh - 12px); max-height: calc(100svh - 12px); }
     h1 { font-size: 19px; }
     .page-head h1 { font-size: 14px; }
     #fix { font-size: 12px; }
