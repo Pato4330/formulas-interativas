@@ -277,33 +277,33 @@
       height: calc(100svh - 16px); max-height: calc(100svh - 16px);
       display: flex; flex-direction: column; overflow: hidden; padding: 12px 14px 14px;
     }
-    header { flex: none; margin-bottom: 6px; }
-    .eyebrow { font-size: 9px; margin-bottom: 3px; }
+    header { flex: none; margin-bottom: 4px; }
+    .eyebrow { font-size: 9px; margin-bottom: 2px; }
     h1 { font-size: 16px; margin-bottom: 0; }
     .sub { display: none; }
-    #formula-fixa { font-size: 14px; margin-top: 3px; }
+    #formula-fixa { font-size: 14px; margin-top: 2px; }
 
-    .layout { flex: 1; min-height: 0; margin-top: 0; display: flex; flex-direction: column; gap: 4px; overflow: hidden; }
+    .layout { flex: 1; min-height: 0; margin-top: 0; display: flex; flex-direction: column; gap: 3px; overflow: hidden; }
     .stage { flex: 1 1 0; min-height: 36svh; display: flex; align-items: center; justify-content: center; }
     svg { width: 100%; height: 100%; max-width: 100%; max-height: 100%; }
 
     .panel { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
-    #formula { font-size: 11.5px; padding: 4px 8px; width: 100%; margin-bottom: 5px; }
-    #controls { flex-direction: column; align-items: stretch; gap: 6px; }
+    #formula { font-size: 11.5px; padding: 3px 8px; width: 100%; margin-bottom: 3px; }
+    #controls { flex-direction: column; align-items: stretch; gap: 3px; }
     .control {
-      max-width: none; width: 100%; padding: 2px 0 3px;
+      max-width: none; width: 100%; padding: 1px 0 2px;
       border: none; border-radius: 0; background: none; box-shadow: none;
       grid-template-columns: 1fr auto auto; gap: 0 8px;
     }
-    .control label { font-size: 12px; }
+    .control label { font-size: 12px; line-height: 1.15; }
     .control .dot { width: 6px; height: 6px; margin-right: 4px; }
-    .control output { font-size: 13px; min-width: auto; text-shadow: none; }
-    .control input[type="number"] { width: 48px; padding: 2px 4px; font-size: 12px; }
-    .control input[type="range"] { height: 3px; margin-top: 2px; }
+    .control output { font-size: 13px; min-width: auto; text-shadow: none; line-height: 1.15; }
+    .control input[type="number"] { width: 46px; padding: 1px 4px; font-size: 12px; line-height: 1.15; }
+    .control input[type="range"] { height: 2px; margin-top: 2px; }
     .control input[type="range"]::-webkit-slider-thumb { width: 14px; height: 14px; border-width: 2px; }
     .control input[type="range"]::-moz-range-thumb { width: 10px; height: 10px; border-width: 2px; }
     .control .min, .control .max { display: none; }
-    svg text { font-size: 18px; }
+    svg text { font-size: 22px; }
   }
 
   @media (max-width: 400px) {
@@ -311,8 +311,8 @@
     main { padding: 10px 10px 12px; border-radius: 14px; height: calc(100svh - 12px); max-height: calc(100svh - 12px); }
     h1 { font-size: 15px; }
     #formula-fixa { font-size: 13px; }
-    #formula { font-size: 11px; padding: 4px 8px; }
-    .control { padding: 3px 8px 3px; }
+    #formula { font-size: 11px; padding: 3px 8px; }
+    .control { padding: 1px 0 2px; }
     .control label { font-size: 10.5px; }
     .control output { font-size: 13px; }
   }
