@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Triângulo Retângulo — Pitágoras</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
+  body {
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+      radial-gradient(900px 500px at 15% -10%, rgba(59,130,246,0.22), transparent 60%),
+      radial-gradient(800px 500px at 110% 110%, rgba(34,197,94,0.16), transparent 60%),
+      radial-gradient(600px 400px at 50% 120%, rgba(239,68,68,0.12), transparent 60%),
+      #0b1020;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    color: #e5e7eb;
+    padding: 24px;
+  }
+
+  main {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 26px;
+    padding: 28px 40px 36px;
+    box-shadow: 0 30px 70px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+    backdrop-filter: blur(14px);
+    text-align: center;
+    max-width: 1180px;
+    width: 100%;
+    margin: auto;
+  }
+
+  header { margin-bottom: 18px; }
+
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: #7dd3fc;
+    margin-bottom: 6px;
+  }
+
+  h1 {
+    font-size: 27px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    background: linear-gradient(90deg, #93c5fd, #86efac);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 5px;
+  }
+
+  .sub { font-size: 14px; color: #9ca3af; margin-bottom: 14px; }
+
+  #formula-fixa {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    font-style: italic;
+    font-family: "Cambria Math", Georgia, serif;
+    color: #cbd5e1;
+    margin-bottom: 6px;
+  }
+  #formula-fixa .a { color: #60a5fa; }
+  #formula-fixa .b { color: #f87171; }
+  #formula-fixa .c { color: #4ade80; }
+
+  #formula {
+    font-size: 22px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 1px;
+    padding: 7px 18px;
+    background: rgba(11,16,32,0.55);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 999px;
+    display: inline-block;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+  }
+  #formula .a { color: #60a5fa; }
+  #formula .b { color: #f87171; }
+  #formula .c { color: #4ade80; }
+  .panel #formula { margin-bottom: 14px; }
+
+  svg {
+    display: block;
+    width: 100%;
+    max-width: 640px;
+    height: auto;
+    margin: 0 auto;
+  }
+
+  .layout { margin-top: 6px; }
+
+  #controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+  }
+
+  .control {
+    flex: 1 1 230px;
+    max-width: 270px;
+    display: grid;
+    grid-template-columns: 1fr auto 74px;
+    align-items: center;
+    gap: 2px 12px;
+    padding: 14px 16px 12px;
+    background: rgba(11,16,32,0.45);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 16px;
+    text-align: left;
+    transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .control:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+    transform: translateY(-2px);
+  }
+
+  .control label { font-size: 13px; font-weight: 700; color: #cbd5e1; }
+  .control output {
+    font-size: 22px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    min-width: 56px;
+    text-align: right;
+    color: var(--accent);
+    text-shadow: 0 0 18px color-mix(in srgb, var(--accent) 55%, transparent);
+  }
+
+  .control .dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    display: inline-block; margin-right: 7px; background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  .control input[type="number"] {
+    width: 100%;
+    padding: 6px 8px;
+    font-size: 14px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    color: #f9fafb;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 9px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .control input[type="number"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+  }
+  .control input[type="number"]::-webkit-inner-spin-button,
+  .control input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  .control input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+
+  .control input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    grid-column: 1 / -1;
+    width: 100%;
+    height: 6px;
+    border-radius: 999px;
+    outline: none;
+    margin-top: 8px;
+    cursor: pointer;
+    background: linear-gradient(to right, var(--accent) var(--p, 0%), rgba(255,255,255,0.12) var(--p, 0%));
+  }
+  .control input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid var(--accent);
+    box-shadow: 0 0 12px var(--accent), 0 2px 6px rgba(0,0,0,0.4);
+    cursor: grab;
+    transition: transform 0.12s ease;
+  }
+  .control input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+  .control input[type="range"]::-webkit-slider-thumb:active { cursor: grabbing; transform: scale(1.05); }
+  .control input[type="range"]::-moz-range-thumb {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid var(--accent);
+    box-shadow: 0 0 12px var(--accent);
+    cursor: grab;
+  }
+
+  .control .min, .control .max { font-size: 11px; color: #6b7280; margin-top: 2px; }
+  .control .max { text-align: right; }
+
+  .control[data-side="a"] { --accent: #3b82f6; }
+  .control[data-side="b"] { --accent: #ef4444; }
+  .control[data-side="c"] { --accent: #22c55e; }
+
+  @media (min-width: 900px) and (orientation: landscape) {
+    body { height: 100svh; overflow: hidden; padding: 16px; }
+
+    main {
+      height: calc(100svh - 32px);
+      max-height: calc(100svh - 32px);
+      display: flex;
+      flex-direction: column;
+      padding: 20px 34px 22px;
+      overflow: hidden;
+    }
+
+    header { flex: none; margin-bottom: 12px; }
+
+    .layout {
+      flex: 1;
+      min-height: 0;
+      margin-top: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(300px, 1fr);
+      grid-template-rows: minmax(0, 1fr);
+      gap: 0 44px;
+    }
+
+    .stage {
+      height: 100%;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    svg {
+      height: 100%;
+      width: auto;
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    .panel {
+      height: 100%;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    #controls { flex-direction: column; align-items: stretch; gap: 10px; }
+    .control {
+      max-width: none;
+      width: 100%;
+      max-height: 86px;
+      padding: 10px 14px 9px;
+    }
+    .control label { font-size: 12px; }
+    .control output { font-size: 18px; min-width: 48px; }
+    .control .dot { width: 8px; height: 8px; }
+    .control input[type="range"] { margin-top: 4px; height: 5px; }
+    .control input[type="range"]::-webkit-slider-thumb { width: 16px; height: 16px; }
+    .control .min, .control .max { display: none; }
+  }
+
+  @media (max-width: 720px) {
+    body { padding: 14px; }
+    main { padding: 26px 18px 30px; border-radius: 22px; }
+    h1 { font-size: 22px; }
+    #formula { font-size: 18px; padding: 8px 16px; }
+    .layout { margin-top: 0; }
+    svg { max-width: 100%; }
+    #controls { flex-direction: column; align-items: stretch; gap: 12px; }
+    .control { max-width: none; width: 100%; padding: 14px 16px 12px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">Teorema de Pitágoras</p>
+    <h1>Triângulo Retângulo</h1>
+    <p class="sub">Deslize as barras e veja tudo mudar ao vivo</p>
+    <div id="formula-fixa"><span class="a">a</span>² + <span class="b">b</span>² = <span class="c">c</span>²</div>
+  </header>
+
+  <div class="layout">
+    <div class="stage">
+      <svg id="triangle" viewBox="0 0 688 688" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+
+    <div class="panel">
+      <div id="formula" aria-live="polite"></div>
+      <div id="controls">
+        <div class="control" data-side="a">
+          <label><span class="dot"></span>Cateto A</label>
+          <output id="out-a"></output>
+          <input type="number" id="num-a" min="0" max="100" step="0.1" inputmode="decimal">
+          <input type="range" id="slider-a" min="0" max="100" step="0.1" value="3">
+        </div>
+
+        <div class="control" data-side="b">
+          <label><span class="dot"></span>Cateto B</label>
+          <output id="out-b"></output>
+          <input type="number" id="num-b" min="0" max="100" step="0.1" inputmode="decimal">
+          <input type="range" id="slider-b" min="0" max="100" step="0.1" value="4">
+        </div>
+
+        <div class="control" data-side="c">
+          <label><span class="dot"></span>Hipotenusa</label>
+          <output id="out-c"></output>
+          <input type="number" id="num-c" min="0" max="142" step="0.1" inputmode="decimal">
+          <input type="range" id="slider-c" min="0" max="142" step="0.1" value="5">
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  const SCALE = 30;
+  const MAX = 20;
+  const LIMIT = 100;
+  const LIMIT_C = 142;
+  const PAD = 52;
+  const SIZE = 2 * PAD + MAX * SCALE;
+
+  const svg = document.getElementById("triangle");
+  const formula = document.getElementById("formula");
+  const sliderA = document.getElementById("slider-a");
+  const sliderB = document.getElementById("slider-b");
+  const sliderC = document.getElementById("slider-c");
+  const numA = document.getElementById("num-a");
+  const numB = document.getElementById("num-b");
+  const numC = document.getElementById("num-c");
+  const outA = document.getElementById("out-a");
+  const outB = document.getElementById("out-b");
+  const outC = document.getElementById("out-c");
+
+  let ta = 3, tb = 4;
+  let da = 3, db = 4;
+
+  const hypoOf = (x, y) => Math.sqrt(x * x + y * y);
+  const fmt = (n) => {
+    const r = Math.round(n * 10) / 10;
+    return r % 1 === 0 ? String(r) : r.toFixed(1);
+  };
+  const pct = (v, min, max) => ((v - min) / (max - min)) * 100;
+
+  function refreshUI() {
+    const c = hypoOf(ta, tb);
+    sliderA.value = ta;
+    sliderB.value = tb;
+    sliderC.value = c;
+    numA.value = fmt(ta);
+    numB.value = fmt(tb);
+    numC.value = fmt(c);
+    sliderA.style.setProperty("--p", pct(ta, 0, LIMIT) + "%");
+    sliderB.style.setProperty("--p", pct(tb, 0, LIMIT) + "%");
+    sliderC.style.setProperty("--p", pct(c, 0, LIMIT_C) + "%");
+    outA.textContent = fmt(ta);
+    outB.textContent = fmt(tb);
+    outC.textContent = fmt(c);
+    formula.innerHTML =
+      '<span class="a">' + fmt(ta) + "²</span> + " +
+      '<span class="b">' + fmt(tb) + "²</span> = " +
+      '<span class="c">' + fmt(c) + "²</span>";
+  }
+
+  function draw(x, y) {
+    const c = hypoOf(x, y);
+    const oy = PAD + MAX * SCALE;
+    const scale = (MAX * SCALE) / Math.max(x, y, 1e-9);
+    const ax = PAD + x * scale, ay = oy;
+    const by = oy - y * scale;
+    const mx = (ax + PAD) / 2, my = (ay + by) / 2;
+    const sq = 14;
+    const rightAngle =
+      PAD + "," + oy + " " + (PAD + sq) + "," + oy + " " +
+      (PAD + sq) + "," + (oy - sq) + " " + PAD + "," + (oy - sq);
+
+    svg.innerHTML =
+      '<polygon points="' + PAD + "," + oy + " " + ax + "," + ay + " " + PAD + "," + by +
+      '" fill="rgba(96,165,250,0.14)" stroke="none"/>' +
+      '<line x1="' + PAD + '" y1="' + oy + '" x2="' + ax + '" y2="' + ay +
+      '" stroke="#3b82f6" stroke-width="5" stroke-linecap="round" style="filter:drop-shadow(0 0 7px rgba(59,130,246,0.55))"/>' +
+      '<line x1="' + PAD + '" y1="' + oy + '" x2="' + PAD + '" y2="' + by +
+      '" stroke="#ef4444" stroke-width="5" stroke-linecap="round" style="filter:drop-shadow(0 0 7px rgba(239,68,68,0.55))"/>' +
+      '<line x1="' + ax + '" y1="' + ay + '" x2="' + PAD + '" y2="' + by +
+      '" stroke="#22c55e" stroke-width="5" stroke-linecap="round" style="filter:drop-shadow(0 0 7px rgba(34,197,94,0.55))"/>' +
+      '<polyline points="' + rightAngle + '" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linejoin="round"/>' +
+      '<text x="' + (PAD + x * scale / 2) + '" y="' + (oy + 26) +
+      '" text-anchor="middle" font-size="19" font-weight="800" fill="#60a5fa" stroke="#0b1020" stroke-width="6" paint-order="stroke">' + fmt(x) + "</text>" +
+      '<text x="' + (PAD - 14) + '" y="' + ((oy + by) / 2 + 6) +
+      '" text-anchor="end" font-size="19" font-weight="800" fill="#f87171" stroke="#0b1020" stroke-width="6" paint-order="stroke">' + fmt(y) + "</text>" +
+      '<text x="' + (mx - 18) + '" y="' + (my - 18) +
+      '" text-anchor="middle" font-size="19" font-weight="800" fill="#4ade80" stroke="#0b1020" stroke-width="6" paint-order="stroke">' + fmt(c) + "</text>";
+  }
+
+  function animate() {
+    da += (ta - da) * 0.4;
+    db += (tb - db) * 0.4;
+    if (Math.abs(ta - da) < 0.02) da = ta;
+    if (Math.abs(tb - db) < 0.02) db = tb;
+    draw(da, db);
+    requestAnimationFrame(animate);
+  }
+
+  const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
+
+  function setHypo(target) {
+    const current = hypoOf(ta, tb);
+    if (current <= 0) {
+      const t = clamp(target, 0, LIMIT_C) / Math.SQRT2;
+      ta = t;
+      tb = t;
+    } else {
+      const k = clamp(target, 0, LIMIT_C) / current;
+      ta = Math.min(ta * k, LIMIT);
+      tb = Math.min(tb * k, LIMIT);
+    }
+  }
+
+  sliderA.addEventListener("input", () => {
+    ta = Number(sliderA.value);
+    refreshUI();
+  });
+
+  sliderB.addEventListener("input", () => {
+    tb = Number(sliderB.value);
+    refreshUI();
+  });
+
+  sliderC.addEventListener("input", () => {
+    setHypo(Number(sliderC.value));
+    refreshUI();
+  });
+
+  numA.addEventListener("change", () => {
+    ta = clamp(Number(numA.value) || 0, 0, LIMIT);
+    refreshUI();
+  });
+
+  numB.addEventListener("change", () => {
+    tb = clamp(Number(numB.value) || 0, 0, LIMIT);
+    refreshUI();
+  });
+
+  numC.addEventListener("change", () => {
+    setHypo(Number(numC.value) || 0);
+    refreshUI();
+  });
+
+  svg.setAttribute("viewBox", "0 0 " + SIZE + " " + SIZE);
+  refreshUI();
+  animate();
+</script>
+</body>
+</html>
