@@ -221,13 +221,13 @@
     #fix { font-size: 13px; letter-spacing: 1px; }
     .back { padding: 4px 11px; font-size: 12px; }
 
-    .layout { flex: 1; min-height: 0; margin-top: 0; display: flex; flex-direction: column; gap: 3px; overflow: hidden; }
+    .layout { flex: 1; min-height: 0; margin-top: 0; display: flex; flex-direction: column; gap: 0; overflow: hidden; }
     .stage { flex: 1 1 0; min-height: 36svh; display: flex; align-items: center; justify-content: center; }
     svg { width: 100%; height: 100%; max-width: 100%; max-height: 100%; }
 
     .panel { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
     .live { font-size: 11.5px; padding: 3px 8px; width: 100%; margin-bottom: 3px; }
-    #controls { flex-direction: column; align-items: stretch; gap: 3px; }
+    #controls { flex-direction: column; align-items: stretch; gap: 0; }
     .control {
       max-width: none; width: 100%; padding: 1px 0 2px;
       border: none; border-radius: 0; background: none; box-shadow: none;
@@ -240,7 +240,7 @@
     .control input[type="range"] { height: 2px; margin-top: 2px; }
     .control input[type="range"]::-webkit-slider-thumb { width: 14px; height: 14px; border-width: 2px; }
     .control input[type="range"]::-moz-range-thumb { width: 10px; height: 10px; border-width: 2px; }
-    svg text { font-size: 22px; }
+    svg text { font-size: 26px; }
   }
 
   @media (max-width: 400px) {
@@ -342,9 +342,9 @@
       const q = 14;
       svg.innerHTML =
         '<polygon points="' + PAD + "," + oy + " " + ax + "," + ay + " " + PAD + "," + by + '" fill="rgba(96,165,250,0.14)"/>' +
-        '<line x1="' + PAD + '" y1="' + oy + '" x2="' + ax + '" y2="' + ay + '" stroke="#3b82f6" stroke-width="5" stroke-linecap="round"/>' +
-        '<line x1="' + PAD + '" y1="' + oy + '" x2="' + PAD + '" y2="' + by + '" stroke="#ef4444" stroke-width="5" stroke-linecap="round"/>' +
-        '<line x1="' + ax + '" y1="' + ay + '" x2="' + PAD + '" y2="' + by + '" stroke="#22c55e" stroke-width="5" stroke-linecap="round"/>' +
+        '<line x1="' + PAD + '" y1="' + oy + '" x2="' + ax + '" y2="' + ay + '" stroke="#3b82f6" stroke-width="5" stroke-linecap="round" style="filter:drop-shadow(0 0 7px rgba(59,130,246,0.55))"/>' +
+        '<line x1="' + PAD + '" y1="' + oy + '" x2="' + PAD + '" y2="' + by + '" stroke="#ef4444" stroke-width="5" stroke-linecap="round" style="filter:drop-shadow(0 0 7px rgba(239,68,68,0.55))"/>' +
+        '<line x1="' + ax + '" y1="' + ay + '" x2="' + PAD + '" y2="' + by + '" stroke="#22c55e" stroke-width="5" stroke-linecap="round" style="filter:drop-shadow(0 0 7px rgba(34,197,94,0.55))"/>' +
         '<polyline points="' + PAD + "," + oy + " " + (PAD + q) + "," + oy + " " + (PAD + q) + "," + (oy - q) + " " + PAD + "," + (oy - q) + '" fill="none" stroke="#9ca3af" stroke-width="2.5"/>' +
         '<text x="' + (PAD + s.a * scale / 2) + '" y="' + (oy + 26) + '" text-anchor="middle" font-size="19" font-weight="800" ' + halo("#60a5fa") + ">" + fmt(s.a) + "</text>" +
         '<text x="' + (PAD - 14) + '" y="' + ((oy + by) / 2 + 6) + '" text-anchor="end" font-size="19" font-weight="800" ' + halo("#f87171") + ">" + fmt(s.b) + "</text>" +
