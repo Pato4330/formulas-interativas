@@ -191,7 +191,7 @@
   }
   .control:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); transform: translateY(-2px); }
   .control label { font-size: 13px; font-weight: 700; color: #cbd5e1; }
-  .control output { font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums; min-width: 56px; text-align: right; color: var(--accent); text-shadow: 0 0 18px color-mix(in srgb, var(--accent) 55%, transparent); }
+  .control output { font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; min-width: 56px; text-align: right; color: var(--accent); text-shadow: 0 0 18px color-mix(in srgb, var(--accent) 55%, transparent); }
   .control .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; margin-right: 7px; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
 
   .control input[type="number"] {
@@ -284,7 +284,7 @@
     .control input[type="range"] { height: 2px; margin-top: 0; }
     .control input[type="range"]::-webkit-slider-thumb { width: 14px; height: 14px; border-width: 2px; }
     .control input[type="range"]::-moz-range-thumb { width: 10px; height: 10px; border-width: 2px; }
-    svg text { font-size: 18px; }
+    svg text { font-size: 34px; }
   }
 
   @media (max-width: 400px) {
@@ -644,6 +644,7 @@
     desc: "A corrente é a razão entre a tensão e a resistência: I = U / R.",
     fix: "U = R·I",
     color: "#22c55e",
+    always: true,
     fields: [
       { key: "U", label: "Tensão (U)", color: "#22c55e", min: 1, max: 120, step: 1, def: 12 },
       { key: "R", label: "Resistência (R)", color: "#f59e0b", min: 1, max: 100, step: 1, def: 10 }
@@ -652,6 +653,7 @@
     live(s) { return "I = <span class=\"c\">" + fmt(s.U) + "</span> / <span class=\"b\">" + fmt(s.R) + "</span> = <b>" + fmt(s.I) + " A</b>"; },
     draw(svg, s) {
       svg.setAttribute("viewBox", "0 0 500 380");
+      const t = Date.now() / 1000;
       const x0 = 120, y0 = 120, w = 260, h = 130;
       const zlen = (w - 80) / 6;
       let zz = "", px = x0 + 40;
@@ -661,7 +663,7 @@
         zz += (i ? "L" : "M") + xx.toFixed(1) + " " + yy;
       }
       const mid = x0 + w / 2;
-      svg.innerHTML =
+      let out =
         '<rect x="' + x0 + '" y="' + y0 + '" width="' + w + '" height="' + h + '" fill="none" stroke="#64748b" stroke-width="2"/>' +
         '<line x1="' + x0 + '" y1="' + (y0 + h / 2 - 22) + '" x2="' + x0 + '" y2="' + (y0 + h / 2 + 22) + '" stroke="#22c55e" stroke-width="4"/>' +
         '<line x1="' + (x0 - 8) + '" y1="' + (y0 + h / 2 - 9) + '" x2="' + (x0 + 8) + '" y2="' + (y0 + h / 2 - 9) + '" stroke="#22c55e" stroke-width="3"/>' +
@@ -672,6 +674,32 @@
         '<line x1="' + (mid - 30) + '" y1="' + (y0 + h / 2) + '" x2="' + (mid + 30) + '" y2="' + (y0 + h / 2) + '" stroke="#60a5fa" stroke-width="4" stroke-linecap="round"/>' +
         '<polygon points="' + (mid + 30) + "," + (y0 + h / 2) + " " + (mid + 20) + "," + (y0 + h / 2 - 6) + " " + (mid + 20) + "," + (y0 + h / 2 + 6) + '" fill="#60a5fa"/>' +
         '<text x="' + (mid + 34) + '" y="' + (y0 + h / 2 + 5) + '" font-size="14" font-weight="800" ' + halo("#60a5fa") + ">I = " + fmt(s.I) + " A</text>";
+      const P = 2 * (w + h);
+      const speed = 0.08 + Math.min(s.I, 12) * 0.35;
+      const dots = 5;
+      const pt = (fr) => {
+        let d = (fr * P) % P;
+        const segs = [
+          [x0, y0, x0 + w, y0],
+          [x0 + w, y0, x0 + w, y0 + h],
+          [x0 + w, y0 + h, x0, y0 + h],
+          [x0, y0 + h, x0, y0]
+        ];
+        for (const sg of segs) {
+          const L = Math.hypot(sg[2] - sg[0], sg[3] - sg[1]);
+          if (d <= L) { const k = d / L; return [sg[0] + (sg[2] - sg[0]) * k, sg[1] + (sg[3] - sg[1]) * k]; }
+          d -= L;
+        }
+        return [x0, y0];
+      };
+      for (let k = 0; k < dots; k++) {
+        const fr = (t * speed + k / dots) % 1;
+        const p = pt(fr);
+        out +=
+          '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="7" fill="rgba(253,224,71,0.22)"/>' +
+          '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="4" fill="#fde047" stroke="#ca8a04" stroke-width="1"/>';
+      }
+      svg.innerHTML = out;
     }
   };
 
@@ -941,6 +969,7 @@
     desc: "Densidade = massa/volume: ρ = m/V. Compare com a água (ρ = 1): flutua ou afunda?",
     fix: "ρ = m / V",
     color: "#22c55e",
+    always: true,
     fields: [
       { key: "m", label: "Massa (m)", color: "#3b82f6", min: 1, max: 100, step: 1, def: 50 },
       { key: "V", label: "Volume (V)", color: "#22c55e", min: 1, max: 100, step: 1, def: 50 }
@@ -949,18 +978,29 @@
     live(s) { return "ρ = <span class=\"b\">" + fmt(s.m) + "</span> / <span class=\"a\">" + fmt(s.V) + "</span> = <b>" + fmt(s.rho) + "</b> g/cm³ " + (s.floats ? "(flutua)" : "(afunda)"); },
     draw(svg, s) {
       svg.setAttribute("viewBox", "0 0 480 440");
+      const t = Date.now() / 1000;
       const tankX = 110, tankW = 260, waterY = 90, tankBottom = 390;
       const size = 24 + (clamp(s.V, 1, 100) / 100) * 70;
       const cx = tankX + tankW / 2;
       const floats = s.m <= s.V;
-      const floatY = floats ? waterY + 10 : tankBottom - size;
-      svg.innerHTML =
+      const bob = floats ? Math.sin(t * 2.2) * 5 : 0;
+      const floatY = floats ? waterY + 10 + bob : tankBottom - size;
+      const tilt = floats ? Math.sin(t * 1.7) * 2.5 : 0;
+      const rot = ' transform="rotate(' + tilt.toFixed(1) + ' ' + cx + ' ' + (floatY + size / 2) + ')"';
+      const ripple = (t % 1.6) / 1.6;
+      let out =
         '<rect x="' + tankX + '" y="' + waterY + '" width="' + tankW + '" height="' + (tankBottom - waterY) + '" fill="rgba(59,130,246,0.18)" stroke="#3b82f6" stroke-width="2.5"/>' +
         '<rect x="' + tankX + '" y="' + waterY + '" width="' + tankW + '" height="18" fill="rgba(147,197,253,0.5)"/>' +
         '<text x="' + cx + '" y="' + (waterY - 12) + '" text-anchor="middle" font-size="13" font-weight="700" fill="#93c5fd">água (ρ = 1)</text>' +
+        '<g' + rot + '>' +
         '<rect x="' + (cx - size / 2) + '" y="' + floatY + '" width="' + size + '" height="' + size + '" rx="6" fill="rgba(239,68,68,0.4)" stroke="#ef4444" stroke-width="3"/>' +
         '<text x="' + cx + '" y="' + (floatY + size / 2 + 5) + '" text-anchor="middle" font-size="13" font-weight="800" ' + halo("#f87171") + ">ρ = " + fmt(s.rho) + "</text>" +
-        '<text x="' + cx + '" y="' + (tankBottom + 28) + '" text-anchor="middle" font-size="14" font-weight="800" ' + halo("#f1f5f9") + ">m = " + fmt(s.m) + " g · V = " + fmt(s.V) + " cm³</text>";
+        "</g>";
+      if (floats) {
+        out += '<ellipse cx="' + cx + '" cy="' + (floatY + size + 6) + '" rx="' + (size * 0.7 + ripple * 46).toFixed(1) + '" ry="7" fill="none" stroke="rgba(147,197,253,0.7)" stroke-width="2"/>';
+      }
+      out += '<text x="' + cx + '" y="' + (tankBottom + 28) + '" text-anchor="middle" font-size="14" font-weight="800" ' + halo("#f1f5f9") + ">m = " + fmt(s.m) + " g · V = " + fmt(s.V) + " cm³</text>";
+      svg.innerHTML = out;
     }
   };
 
@@ -970,6 +1010,7 @@
     desc: "A força entre duas massas: F = G·m₁·m₂/d², com G = 6,67×10⁻¹¹.",
     fix: "F = G·m₁·m₂ / d²",
     color: "#3b82f6",
+    always: true,
     fields: [
       { key: "m1", label: "Massa 1 (m₁)", color: "#3b82f6", min: 1, max: 100, step: 1, def: 60 },
       { key: "m2", label: "Massa 2 (m₂)", color: "#ef4444", min: 1, max: 100, step: 1, def: 60 },
@@ -979,29 +1020,46 @@
     live(s) { return "F = 6,67×10⁻¹¹·" + fmt(s.m1) + "·" + fmt(s.m2) + " / " + fmt(s.d) + "² = <b>" + fmt(s.F) + " N</b>"; },
     draw(svg, s) {
       svg.setAttribute("viewBox", "0 0 500 360");
-      const cy = 180, d = clamp(s.d, 2, 20);
+      const t = Date.now() / 1000;
+      const bob = Math.sin(t * 1.4) * 3;
+      const cy = 180 + bob;
+      const d = clamp(s.d, 2, 20);
       const scale = 230 / 20;
       const r1 = 8 + s.m1 * 0.14, r2 = 8 + s.m2 * 0.14;
       const half = (d * scale) / 2;
       const c1x = 250 - half, c2x = 250 + half;
       const gap = c2x - r2 - c1x - r1;
       const al = Math.max(gap - 16, 0);
+      const touching = gap <= 0;
+      const sh = touching ? Math.sin(t * 30) * 1.6 : 0;
+      const c1y = cy + sh, c2y = cy - sh;
       let out =
-        '<circle cx="' + c1x + '" cy="' + cy + '" r="' + r1 + '" fill="rgba(59,130,246,0.5)" stroke="#3b82f6" stroke-width="2.5"/>' +
-        '<text x="' + c1x + '" y="' + (cy + r1 + 20) + '" text-anchor="middle" font-size="13" font-weight="800" ' + halo("#60a5fa") + ">m₁ = " + fmt(s.m1) + "</text>" +
-        '<circle cx="' + c2x + '" cy="' + cy + '" r="' + r2 + '" fill="rgba(239,68,68,0.5)" stroke="#ef4444" stroke-width="2.5"/>' +
-        '<text x="' + c2x + '" y="' + (cy + r2 + 20) + '" text-anchor="middle" font-size="13" font-weight="800" ' + halo("#f87171") + ">m₂ = " + fmt(s.m2) + "</text>" +
-        '<line x1="' + (c1x + r1) + '" y1="' + cy + '" x2="' + (c2x - r2) + '" y2="' + cy + '" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5 4"/>' +
-        '<text x="250" y="' + (cy - 16) + '" text-anchor="middle" font-size="13" font-weight="700" ' + halo("#fbbf24") + ">d = " + fmt(s.d) + "</text>";
+        '<circle cx="' + c1x + '" cy="' + c1y.toFixed(1) + '" r="' + r1 + '" fill="' + (touching ? "rgba(251,191,36,0.75)" : "rgba(59,130,246,0.5)") + '" stroke="#3b82f6" stroke-width="2.5"/>' +
+        '<text x="' + c1x + '" y="' + (c1y + r1 + 20).toFixed(1) + '" text-anchor="middle" font-size="13" font-weight="800" ' + halo("#60a5fa") + ">m₁ = " + fmt(s.m1) + "</text>" +
+        '<circle cx="' + c2x + '" cy="' + c2y.toFixed(1) + '" r="' + r2 + '" fill="' + (touching ? "rgba(251,191,36,0.75)" : "rgba(239,68,68,0.5)") + '" stroke="#ef4444" stroke-width="2.5"/>' +
+        '<text x="' + c2x + '" y="' + (c2y + r2 + 20).toFixed(1) + '" text-anchor="middle" font-size="13" font-weight="800" ' + halo("#f87171") + ">m₂ = " + fmt(s.m2) + "</text>";
+      if (!touching) {
+        out += '<line x1="' + (c1x + r1) + '" y1="' + c1y.toFixed(1) + '" x2="' + (c2x - r2) + '" y2="' + c2y.toFixed(1) + '" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5 4"/>';
+      }
+      out += '<text x="250" y="' + (cy - 16).toFixed(1) + '" text-anchor="middle" font-size="13" font-weight="700" ' + halo("#fbbf24") + ">d = " + fmt(s.d) + "</text>";
       if (al > 0) {
         const mid1 = c1x + r1 + al / 2, mid2 = c2x - r2 - al / 2;
         out +=
-          '<line x1="' + (c1x + r1 + 6) + '" y1="' + cy + '" x2="' + mid1 + '" y2="' + cy + '" stroke="#60a5fa" stroke-width="3"/>' +
-          '<polygon points="' + mid1 + "," + cy + " " + (mid1 - 11) + "," + (cy - 6) + " " + (mid1 - 11) + "," + (cy + 6) + '" fill="#60a5fa"/>' +
-          '<line x1="' + (c2x - r2 - 6) + '" y1="' + cy + '" x2="' + mid2 + '" y2="' + cy + '" stroke="#f87171" stroke-width="3"/>' +
-          '<polygon points="' + mid2 + "," + cy + " " + (mid2 + 11) + "," + (cy - 6) + " " + (mid2 + 11) + "," + (cy + 6) + '" fill="#f87171"/>';
+          '<line x1="' + (c1x + r1 + 6) + '" y1="' + c1y.toFixed(1) + '" x2="' + mid1.toFixed(1) + '" y2="' + c1y.toFixed(1) + '" stroke="#60a5fa" stroke-width="3"/>' +
+          '<polygon points="' + mid1.toFixed(1) + "," + c1y.toFixed(1) + " " + (mid1 - 11).toFixed(1) + "," + (c1y - 6).toFixed(1) + " " + (mid1 - 11).toFixed(1) + "," + (c1y + 6).toFixed(1) + '" fill="#60a5fa"/>' +
+          '<line x1="' + (c2x - r2 - 6) + '" y1="' + c2y.toFixed(1) + '" x2="' + mid2.toFixed(1) + '" y2="' + c2y.toFixed(1) + '" stroke="#f87171" stroke-width="3"/>' +
+          '<polygon points="' + mid2.toFixed(1) + "," + c2y.toFixed(1) + " " + (mid2 + 11).toFixed(1) + "," + (c2y - 6).toFixed(1) + " " + (mid2 + 11).toFixed(1) + "," + (c2y + 6).toFixed(1) + '" fill="#f87171"/>';
       }
-      out += '<text x="250" y="' + (cy + 36) + '" text-anchor="middle" font-size="16" font-weight="800" ' + halo("#4ade80") + ">F = " + fmt(s.F) + " N</text>";
+      if (touching) {
+        const shock = (t % 1.1) / 1.1;
+        const sr = 20 + shock * 90;
+        out +=
+          '<circle cx="250" cy="' + cy.toFixed(1) + '" r="' + sr.toFixed(1) + '" fill="none" stroke="#fbbf24" stroke-width="3" opacity="' + (1 - shock).toFixed(2) + '"/>' +
+          '<circle cx="250" cy="' + cy.toFixed(1) + '" r="' + (sr * 0.6).toFixed(1) + '" fill="none" stroke="#f87171" stroke-width="2" opacity="' + ((1 - shock) * 0.6).toFixed(2) + '"/>' +
+          '<circle cx="250" cy="' + cy.toFixed(1) + '" r="' + (14 + Math.sin(t * 8) * 6).toFixed(1) + '" fill="rgba(251,191,36,0.5)"/>' +
+          '<text x="250" y="' + (cy - 44).toFixed(1) + '" text-anchor="middle" font-size="19" font-weight="900" ' + halo("#fbbf24") + ">COLISÃO!</text>";
+      }
+      out += '<text x="250" y="' + (cy + 42).toFixed(1) + '" text-anchor="middle" font-size="16" font-weight="800" ' + halo("#4ade80") + ">F = " + fmt(s.F) + " N</text>";
       svg.innerHTML = out;
     }
   };
