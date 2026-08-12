@@ -1221,20 +1221,21 @@
       svg.setAttribute("viewBox", "0 0 480 480");
       const T = Date.now() / 1000;
       const a = clamp(s.a, 1, 10);
-      const L = 90 + a * 13;
-      const d = L * 0.45;
-      const cx = 240, cy = 225;
-      const t = cy - L, r = cx + L / 2, l = cx - L / 2, b = cy + L / 2;
-      const rock = Math.sin(T * 0.8) * 2.5;
+      const L = 62 + a * 9;
+      const d = L * 0.42;
+      const cx = 240, cy = 245;
+      const t = cy - L / 2, r = cx + L / 2, l = cx - L / 2, b = cy + L / 2;
+      const rock = Math.sin(T * 0.9) * 1.8;
       const g = ' transform="rotate(' + rock.toFixed(2) + ' ' + cx + ' ' + cy + ')"';
       svg.innerHTML =
+        '<ellipse cx="' + cx + '" cy="' + (b + 12) + '" rx="' + (L * 0.8).toFixed(1) + '" ry="11" fill="rgba(0,0,0,0.25)"/>' +
         '<g' + g + ">" +
-        '<polygon points="' + l + "," + t + " " + r + "," + t + " " + (r + d) + "," + (t - d) + " " + (l + d) + "," + (t - d) + '" fill="rgba(139,92,246,0.5)" stroke="#8b5cf6" stroke-width="3"/>' +
+        '<polygon points="' + l + "," + t + " " + r + "," + t + " " + (r + d) + "," + (t - d) + " " + (l + d) + "," + (t - d) + '" fill="rgba(139,92,246,0.55)" stroke="#8b5cf6" stroke-width="3"/>' +
         '<polygon points="' + r + "," + t + " " + (r + d) + "," + (t - d) + " " + (r + d) + "," + (b - d) + " " + r + "," + b + '" fill="rgba(139,92,246,0.3)" stroke="#8b5cf6" stroke-width="3"/>' +
         '<rect x="' + l + '" y="' + t + '" width="' + L + '" height="' + L + '" fill="rgba(139,92,246,0.4)" stroke="#8b5cf6" stroke-width="3"/>' +
         "</g>" +
-        '<text x="' + cx + '" y="' + (b + 38) + '" text-anchor="middle" font-size="15" font-weight="800" ' + halo("#c4b5fd") + ">a = " + fmt(a) + "</text>" +
-        '<text x="' + cx + '" y="' + (b + 66) + '" text-anchor="middle" font-size="17" font-weight="800" ' + halo("#4ade80") + ">V = " + fmt(s.V) + " u³</text>";
+        '<text x="' + cx + '" y="' + (b + 42) + '" text-anchor="middle" font-size="15" font-weight="800" ' + halo("#c4b5fd") + ">a = " + fmt(a) + "</text>" +
+        '<text x="' + cx + '" y="' + (b + 72) + '" text-anchor="middle" font-size="17" font-weight="800" ' + halo("#4ade80") + ">V = " + fmt(s.V) + " u³</text>";
     }
   };
 
@@ -1288,20 +1289,28 @@
       const cH = clamp((s.c + 40) / 140, 0, 1) * (bottom - top);
       const fH = clamp((s.f + 40) / 252, 0, 1) * (bottom - top);
       const bulbR = 26;
-      const cbf = (T * 0.55) % 1;
-      const fbf = (T * 0.55 + 0.5) % 1;
-      const cBubY = bottom - cH - cbf * 70;
-      const fBubY = bottom - fH - fbf * 70;
+      const bub = (side, heat, surfY) => {
+        let out = "";
+        const n = Math.round(1 + heat * 6);
+        const spd = 0.35 + heat * 1.5;
+        for (let i = 0; i < n; i++) {
+          const bf = (T * spd + i / n) % 1;
+          const by = Math.max(surfY - bf * 90, top + 8);
+          const bx = side + Math.sin(T * 3 + i * 2.1) * 7;
+          out += '<circle cx="' + bx.toFixed(1) + '" cy="' + by.toFixed(1) + '" r="' + (2.5 + heat * 3 + (i % 3) * 0.8).toFixed(1) + '" fill="rgba(255,255,255,' + (0.25 + heat * 0.45).toFixed(2) + ')"/>';
+        }
+        return out;
+      };
       svg.innerHTML =
         '<rect x="' + (cX - tubeW / 2) + '" y="' + top + '" width="' + tubeW + '" height="' + (bottom - top) + '" rx="' + tubeW / 2 + '" fill="none" stroke="#94a3b8" stroke-width="2"/>' +
         '<rect x="' + (cX - tubeW / 2) + '" y="' + (bottom - cH) + '" width="' + tubeW + '" height="' + cH + '" rx="' + tubeW / 2 + '" fill="rgba(239,68,68,0.6)"/>' +
         '<circle cx="' + cX + '" cy="' + (bottom + bulbR - 2) + '" r="' + bulbR + '" fill="rgba(239,68,68,0.6)" stroke="#94a3b8" stroke-width="2"/>' +
-        '<circle cx="' + (cX + Math.sin(T * 4 + cbf * 9) * 7) + '" cy="' + cBubY.toFixed(1) + '" r="4" fill="rgba(255,255,255,0.5)"/>' +
+        bub(cX, clamp((s.c + 40) / 140, 0, 1), bottom - cH) +
         '<text x="' + cX + '" y="' + (bottom + bulbR * 2 + 26) + '" text-anchor="middle" font-size="15" font-weight="800" ' + halo("#f87171") + ">" + fmt(s.c) + " °C</text>" +
         '<rect x="' + (fX - tubeW / 2) + '" y="' + top + '" width="' + tubeW + '" height="' + (bottom - top) + '" rx="' + tubeW / 2 + '" fill="none" stroke="#94a3b8" stroke-width="2"/>' +
         '<rect x="' + (fX - tubeW / 2) + '" y="' + (bottom - fH) + '" width="' + tubeW + '" height="' + fH + '" rx="' + tubeW / 2 + '" fill="rgba(249,115,22,0.6)"/>' +
         '<circle cx="' + fX + '" cy="' + (bottom + bulbR - 2) + '" r="' + bulbR + '" fill="rgba(249,115,22,0.6)" stroke="#94a3b8" stroke-width="2"/>' +
-        '<circle cx="' + (fX + Math.sin(T * 4 + 2 + fbf * 9) * 7) + '" cy="' + fBubY.toFixed(1) + '" r="4" fill="rgba(255,255,255,0.5)"/>' +
+        bub(fX, clamp((s.f + 40) / 252, 0, 1), bottom - fH) +
         '<text x="' + fX + '" y="' + (bottom + bulbR * 2 + 26) + '" text-anchor="middle" font-size="15" font-weight="800" ' + halo("#fb923c") + ">" + fmt(s.f) + " °F</text>";
     }
   };
