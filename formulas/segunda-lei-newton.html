@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Segunda Lei de Newton · Fórmulas Interativas</title>
+  <link rel="stylesheet" href="../css/estilo.css">
+</head>
+<body>
+  <main id="app"></main>
+  <script src="../js/utilitarios.js"></script>
+  <script>
+    "use strict";
+    const formula = {
+      titulo: "Segunda Lei de Newton",
+      descricao: "A força resultante é o produto da massa pela aceleração: F = m·a.",
+      formula: "F = m·a",
+      cor: "#ef4444",
+      sempre: true,
+      campos: [
+        { chave: "m", rotulo: "Massa (m)", cor: "#3b82f6", min: 1, max: 20, passo: 0.1, padrao: 5 },
+        { chave: "a", rotulo: "Aceleração (a)", cor: "#ef4444", min: 0, max: 10, passo: 0.1, padrao: 2 }
+      ],
+      calcular(estado) { estado.F = estado.m * estado.a; },
+      textoAoVivo(estado) { return "F = <span class=\"b\">" + formatarNumero(estado.m) + "</span> · <span class=\"a\">" + formatarNumero(estado.a) + "</span> = <b>" + formatarNumero(estado.F) + " N</b>"; },
+      desenhar(svg, estado) {
+        svg.setAttribute("viewBox", "0 0 500 360");
+        const tempo = Date.now() / 1000;
+        const centroY = 190, xOrigem = 120;
+        const comprimento = Math.min(estado.F / 200, 1) * 220 + Math.sin(tempo * 5) * 5;
+        svg.innerHTML =
+          '<rect x="' + (xOrigem - 55) + '" y="' + (centroY - 42) + '" width="90" height="70" rx="8" fill="rgba(96,165,250,0.15)" stroke="#3b82f6" stroke-width="3"/>' +
+          '<text x="' + (xOrigem - 10) + '" y="' + (centroY + 6) + '" text-anchor="middle" font-size="15" font-weight="800" ' + contornoPreto("#60a5fa") + ">m = " + formatarNumero(estado.m) + "</text>" +
+          '<line x1="' + (xOrigem + 35) + '" y1="' + centroY + '" x2="' + (xOrigem + 35 + comprimento) + '" y2="' + centroY + '" stroke="#ef4444" stroke-width="6" stroke-linecap="round"/>' +
+          '<polygon points="' + (xOrigem + 35 + comprimento) + "," + centroY + " " + (xOrigem + 35 + comprimento - 14) + "," + (centroY - 8) + " " + (xOrigem + 35 + comprimento - 14) + "," + (centroY + 8) + '" fill="#ef4444"/>' +
+          '<text x="' + (xOrigem + 35 + comprimento / 2) + '" y="' + (centroY - 18) + '" text-anchor="middle" font-size="16" font-weight="800" ' + contornoPreto("#f87171") + ">F = " + formatarNumero(estado.F) + " N</text>" +
+          '<line x1="' + (xOrigem - 70) + '" y1="' + (centroY + 85) + '" x2="' + (xOrigem + 280) + '" y2="' + (centroY + 85) + '" stroke="#64748b" stroke-width="2"/>' +
+          '<text x="' + (xOrigem - 10) + '" y="' + (centroY + 74) + '" text-anchor="middle" font-size="13" font-weight="700" fill="#cbd5e1">a = ' + formatarNumero(estado.a) + " m/s²</text>";
+      }
+    };
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Queda Livre · Fórmulas Interativas</title>
+  <link rel="stylesheet" href="../css/estilo.css">
+</head>
+<body>
+  <main id="app"></main>
+  <script src="../js/utilitarios.js"></script>
+  <script>
+    "use strict";
+    const formula = {
+      titulo: "Queda Livre",
+      descricao: "A distância percorrida e a velocidade dependem do tempo: h = ½gt², v = gt (g = 9,8 m/s²).",
+      formula: "h = ½gt² · v = gt",
+      cor: "#ef4444",
+      sempre: true,
+      campos: [
+        { chave: "t", rotulo: "Tempo (t)", cor: "#ef4444", min: 0, max: 5, passo: 0.1, padrao: 2 }
+      ],
+      calcular(estado) { estado.h = 0.5 * 9.8 * estado.t * estado.t; estado.v = 9.8 * estado.t; },
+      textoAoVivo(estado) { return "h = ½ · 9,8 · " + formatarNumero(estado.t) + "² = <b>" + formatarNumero(estado.h) + " m</b><br>v = 9,8 · " + formatarNumero(estado.t) + " = <b>" + formatarNumero(estado.v) + " m/s</b>"; },
+      desenhar(svg, estado) {
+        svg.setAttribute("viewBox", "0 0 480 480");
+        const tempo = Date.now() / 1000;
+        const topo = 40, chao = 440, xCentro = 150;
+        const faseAnimacao = (tempo * 0.42) % 1;
+        let fracao = faseAnimacao < 0.85 ? Math.pow(faseAnimacao / 0.85, 2) : 1 - 0.28 * ((faseAnimacao - 0.85) / 0.15);
+        fracao = Math.min(Math.max(fracao, 0), 1);
+        const posicaoBola = topo + fracao * (chao - topo);
+        const alturaAnimada = fracao * 122.5, tempoAnimado = 5 * Math.sqrt(fracao), velocidadeAnimada = 9.8 * tempoAnimado;
+        const comprimentoSeta = Math.min(velocidadeAnimada / 50, 1) * 90;
+        const posicaoFantasma = topo + (limitar(estado.h, 0, 122.5) * 400 / 122.5);
+        let resultado =
+          '<line x1="' + xCentro + '" y1="' + topo + '" x2="' + xCentro + '" y2="' + chao + '" stroke="#64748b" stroke-width="2" stroke-dasharray="5 5"/>' +
+          '<line x1="' + (xCentro - 45) + '" y1="' + chao + '" x2="' + (xCentro + 45) + '" y2="' + chao + '" stroke="#cbd5e1" stroke-width="3"/>' +
+          '<text x="' + xCentro + '" y="' + (topo - 14) + '" text-anchor="middle" font-size="13" font-weight="700" fill="#94a3b8">t = ' + formatarNumero(estado.t) + " s</text>";
+        if (estado.t > 0) {
+          resultado += '<circle cx="' + xCentro + '" cy="' + posicaoFantasma + '" r="14" fill="none" stroke="rgba(148,163,184,0.65)" stroke-width="1.5" stroke-dasharray="3 3"/>';
+        }
+        resultado += '<line x1="' + (xCentro - 7) + '" y1="' + topo + '" x2="' + (xCentro - 7) + '" y2="' + posicaoBola + '" stroke="#3b82f6" stroke-width="3"/>';
+        resultado += '<text x="' + (xCentro - 16) + '" y="' + ((topo + posicaoBola) / 2) + '" text-anchor="end" font-size="15" font-weight="800" ' + contornoPreto("#60a5fa") + ">h = " + formatarNumero(alturaAnimada) + "</text>";
+        resultado += '<line x1="' + (xCentro + 18) + '" y1="' + posicaoBola + '" x2="' + (xCentro + 18 + comprimentoSeta) + '" y2="' + posicaoBola + '" stroke="#f59e0b" stroke-width="4" stroke-linecap="round"/>';
+        resultado += '<polygon points="' + (xCentro + 18 + comprimentoSeta) + "," + posicaoBola + " " + (xCentro + 18 + comprimentoSeta - 10) + "," + (posicaoBola - 6) + " " + (xCentro + 18 + comprimentoSeta - 10) + "," + (posicaoBola + 6) + '" fill="#f59e0b"/>';
+        resultado += '<text x="' + (xCentro + 24 + comprimentoSeta) + '" y="' + (posicaoBola - 10) + '" font-size="14" font-weight="800" ' + contornoPreto("#fbbf24") + ">v = " + formatarNumero(velocidadeAnimada) + "</text>";
+        resultado += '<circle cx="' + xCentro + '" cy="' + posicaoBola + '" r="12" fill="#ef4444" stroke="#fff" stroke-width="2"/>';
+        svg.innerHTML = resultado;
+      }
+    };
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

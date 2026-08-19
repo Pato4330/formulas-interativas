@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Volume do Cubo · Fórmulas Interativas</title>
+  <link rel="stylesheet" href="../css/estilo.css">
+</head>
+<body>
+  <main id="app"></main>
+  <script src="../js/utilitarios.js"></script>
+  <script>
+    "use strict";
+    const formula = {
+      titulo: "Volume do Cubo",
+      categoria: "Matemática",
+      descricao: "V = a³. Aumente a aresta e veja o cubo crescer em 3D.",
+      formula: "V = a³",
+      cor: "#8b5cf6",
+      sempre: true,
+      campos: [
+        { chave: "a", rotulo: "Aresta (a)", cor: "#8b5cf6", min: 1, max: 10, passo: 0.5, padrao: 3 }
+      ],
+      calcular(estado) { estado.V = estado.a * estado.a * estado.a; },
+      textoAoVivo(estado) {
+        return "V = " + formatarNumero(estado.a) + "³ = <b>" + formatarNumero(estado.V) + " u³</b>";
+      },
+      desenhar(svg, estado) {
+        svg.setAttribute("viewBox", "0 0 480 480");
+        const tempo = Date.now() / 1000;
+        const aresta = limitar(estado.a, 1, 10);
+        const lado = 62 + aresta * 9;
+        const diagonal = lado * 0.42;
+        const centroX = 240, centroY = 245;
+        const topo = centroY - lado / 2, direita = centroX + lado / 2, esquerda = centroX - lado / 2, baixo = centroY + lado / 2;
+        const balanco = Math.sin(tempo * 0.9) * 1.8;
+        const girar = ' transform="rotate(' + balanco.toFixed(2) + ' ' + centroX + ' ' + centroY + ')"';
+        svg.innerHTML =
+          '<ellipse cx="' + centroX + '" cy="' + (baixo + 12) + '" rx="' + (lado * 0.8).toFixed(1) + '" ry="11" fill="rgba(0,0,0,0.25)"/>' +
+          '<g' + girar + ">" +
+          '<polygon points="' + esquerda + "," + topo + " " + direita + "," + topo + " " + (direita + diagonal) + "," + (topo - diagonal) + " " + (esquerda + diagonal) + "," + (topo - diagonal) + '" fill="rgba(139,92,246,0.55)" stroke="#8b5cf6" stroke-width="3"/>' +
+          '<polygon points="' + direita + "," + topo + " " + (direita + diagonal) + "," + (topo - diagonal) + " " + (direita + diagonal) + "," + (baixo - diagonal) + " " + direita + "," + baixo + '" fill="rgba(139,92,246,0.3)" stroke="#8b5cf6" stroke-width="3"/>' +
+          '<rect x="' + esquerda + '" y="' + topo + '" width="' + lado + '" height="' + lado + '" fill="rgba(139,92,246,0.4)" stroke="#8b5cf6" stroke-width="3"/>' +
+          "</g>" +
+          '<text x="' + centroX + '" y="' + (baixo + 42) + '" text-anchor="middle" font-size="15" font-weight="800" ' + contornoPreto("#c4b5fd") + ">a = " + formatarNumero(aresta) + "</text>" +
+          '<text x="' + centroX + '" y="' + (baixo + 72) + '" text-anchor="middle" font-size="17" font-weight="800" ' + contornoPreto("#4ade80") + ">V = " + formatarNumero(estado.V) + " u³</text>";
+      }
+    };
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

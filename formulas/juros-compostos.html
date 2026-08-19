@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Juros Compostos · Fórmulas Interativas</title>
+  <link rel="stylesheet" href="../css/estilo.css">
+</head>
+<body>
+  <main id="app"></main>
+  <script src="../js/utilitarios.js"></script>
+  <script>
+    "use strict";
+    const formula = {
+      titulo: "Juros Compostos",
+      categoria: "Matemática",
+      descricao: "Crescimento do dinheiro: M = C·(1+i)ᵗ. Veja o montante crescer ao longo dos meses.",
+      formula: "M = C·(1 + i)ᵗ",
+      cor: "#f59e0b",
+      sempre: true,
+      campos: [
+        { chave: "C", rotulo: "Capital (C)", cor: "#3b82f6", min: 100, max: 10000, passo: 100, padrao: 1000 },
+        { chave: "i", rotulo: "Taxa mensal (i)", cor: "#f59e0b", min: 0.5, max: 10, passo: 0.5, padrao: 2 },
+        { chave: "t", rotulo: "Meses (t)", cor: "#22c55e", min: 1, max: 120, passo: 1, padrao: 12 }
+      ],
+      calcular(estado) { estado.M = estado.C * Math.pow(1 + estado.i / 100, estado.t); },
+      textoAoVivo(estado) {
+        return "M = " + formatarNumero(estado.C) + "·(1+" + formatarNumero(estado.i) + "%)<sup>" + formatarNumero(estado.t) + "</sup> = <b>R$ " + formatarNumero(estado.M) + "</b>";
+      },
+      desenhar(svg, estado) {
+        svg.setAttribute("viewBox", "0 0 500 360");
+        const tempo = Date.now() / 1000;
+        const largura = 500, altura = 360, margem = 44;
+        const tempoMaximo = 120, capital = estado.C, taxa = estado.i / 100, meses = limitar(estado.t, 1, 120);
+        const montanteMaximo = capital * Math.pow(1 + taxa, tempoMaximo);
+        const yDoGrafico = (valor) => altura - margem - (valor / montanteMaximo) * (altura - 2 * margem);
+        const xDoGrafico = (mes) => margem + (mes / tempoMaximo) * (largura - 2 * margem);
+        let pontos = "";
+        for (let mes = 0; mes <= tempoMaximo; mes++) pontos += xDoGrafico(mes).toFixed(1) + "," + yDoGrafico(capital * Math.pow(1 + taxa, mes)).toFixed(1) + " ";
+        const pontoX = xDoGrafico(meses), pontoY = yDoGrafico(capital * Math.pow(1 + taxa, meses));
+        const cometaFracao = (tempo * 0.25) % 1;
+        const cometaTempo = cometaFracao * tempoMaximo;
+        const cometaX = xDoGrafico(cometaTempo), cometaY = yDoGrafico(capital * Math.pow(1 + taxa, cometaTempo));
+        svg.innerHTML =
+          '<line x1="' + margem + '" y1="' + (altura - margem) + '" x2="' + (largura - margem) + '" y2="' + (altura - margem) + '" stroke="#cbd5e1" stroke-width="2"/>' +
+          '<line x1="' + margem + '" y1="' + margem + '" x2="' + margem + '" y2="' + (altura - margem) + '" stroke="#cbd5e1" stroke-width="2"/>' +
+          '<polyline points="' + pontos.trim() + '" fill="none" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>' +
+          '<circle cx="' + cometaX + '" cy="' + cometaY + '" r="5.5" fill="#fbbf24" stroke="#0b1020" stroke-width="1.5"/>' +
+          '<circle cx="' + pontoX + '" cy="' + pontoY + '" r="7" fill="#f59e0b" stroke="#0b1020" stroke-width="2"/>' +
+          '<text x="' + pontoX + '" y="' + (pontoY - 14) + '" text-anchor="middle" font-size="15" font-weight="800" ' + contornoPreto("#fbbf24") + ">R$ " + formatarNumero(estado.M) + "</text>" +
+          '<text x="' + (largura - margem) + '" y="' + (altura - margem + 24) + '" text-anchor="end" font-size="13" fill="#94a3b8">tempo (meses)</text>';
+      }
+    };
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

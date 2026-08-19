@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Calor Sensível · Fórmulas Interativas</title>
+  <link rel="stylesheet" href="../css/estilo.css">
+</head>
+<body>
+  <main id="app"></main>
+  <script src="../js/utilitarios.js"></script>
+  <script>
+    "use strict";
+    const formula = {
+      titulo: "Calor Sensível",
+      descricao: "Q = m·c·ΔT. Quanto de calor para aquecer a água?",
+      formula: "Q = m·c·ΔT",
+      cor: "#ef4444",
+      sempre: true,
+      campos: [
+        { chave: "massa", rotulo: "Massa (m)", cor: "#3b82f6", min: 50, max: 500, passo: 10, padrao: 200 },
+        { chave: "variacaoTemperatura", rotulo: "Variação (ΔT)", cor: "#f59e0b", min: 1, max: 80, passo: 1, padrao: 20 }
+      ],
+      calcular(estado) { estado.calor = estado.massa * 1 * estado.variacaoTemperatura; },
+      textoAoVivo(estado) { return "Q = " + formatarNumero(estado.massa) + "·1·" + formatarNumero(estado.variacaoTemperatura) + " = <b>" + formatarNumero(estado.calor) + " cal</b>"; },
+      desenhar(svg, estado) {
+        svg.setAttribute("viewBox", "0 0 480 440");
+        const tempoAnimacao = Date.now() / 1000;
+        const massa = limitar(estado.massa, 50, 500), variacao = limitar(estado.variacaoTemperatura, 1, 80);
+        const xTanque = 120, larguraTanque = 240, yAgua = 90, fundoTanque = 330;
+        const alturaAgua = (massa / 500) * (fundoTanque - yAgua - 20) + 20;
+        const yNivelAgua = fundoTanque - alturaAgua;
+        const alturaChama = 16 + (variacao / 80) * 30 + Math.sin(tempoAnimacao * 9) * 4;
+        const oscilacaoChama = Math.sin(tempoAnimacao * 7) * 4;
+        const centroX = 240;
+        let desenho =
+          '<rect x="' + xTanque + '" y="' + yAgua + '" width="' + larguraTanque + '" height="' + (fundoTanque - yAgua) + '" fill="none" stroke="#94a3b8" stroke-width="2.5"/>' +
+          '<rect x="' + xTanque + '" y="' + yNivelAgua + '" width="' + larguraTanque + '" height="' + alturaAgua + '" fill="rgba(59,130,246,0.35)" stroke="rgba(96,165,250,0.6)"/>' +
+          '<text x="' + centroX + '" y="' + (yNivelAgua - 10) + '" text-anchor="middle" font-size="13" font-weight="800" ' + contornoPreto("#60a5fa") + ">" + formatarNumero(massa) + " g de água</text>" +
+          '<text x="' + centroX + '" y="' + (yNivelAgua + alturaAgua / 2 + 5) + '" text-anchor="middle" font-size="13" font-weight="800" ' + contornoPreto("#93c5fd") + ">ΔT = " + formatarNumero(variacao) + " °C</text>" +
+          '<ellipse cx="' + (centroX + oscilacaoChama * 0.6) + '" cy="' + (fundoTanque + 14) + '" rx="38" ry="' + alturaChama + '" fill="rgba(239,68,68,0.55)"/>' +
+          '<ellipse cx="' + (centroX + oscilacaoChama) + '" cy="' + (fundoTanque + 14) + '" rx="16" ry="' + (alturaChama * 0.6) + '" fill="rgba(251,191,36,0.85)"/>' +
+          '<text x="' + centroX + '" y="' + (fundoTanque + 66) + '" text-anchor="middle" font-size="16" font-weight="800" ' + contornoPreto("#f87171") + ">Q = " + formatarNumero(estado.calor) + " cal</text>";
+        for (let i = 0; i < 4; i++) {
+          const fatorBolha = (tempoAnimacao * 0.5 + i / 4) % 1;
+          const yBolha = yNivelAgua + alturaAgua - fatorBolha * (alturaAgua - 12);
+          const xBolha = xTanque + 24 + i * 62 + Math.sin(tempoAnimacao * 2 + i) * 6;
+          desenho += '<circle cx="' + xBolha.toFixed(1) + '" cy="' + yBolha.toFixed(1) + '" r="' + (3 + (i % 3)) + '" fill="rgba(255,255,255,0.45)" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>';
+        }
+        svg.innerHTML = desenho;
+      }
+    };
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lei da Gravitação Universal · Fórmulas Interativas</title>
+  <link rel="stylesheet" href="../css/estilo.css">
+</head>
+<body>
+  <main id="app"></main>
+  <script src="../js/utilitarios.js"></script>
+  <script>
+    "use strict";
+    const formula = {
+      titulo: "Lei da Gravitação Universal",
+      descricao: "A força entre duas massas: F = G·m₁·m₂/d², com G = 6,67×10⁻¹¹.",
+      formula: "F = G·m₁·m₂ / d²",
+      cor: "#3b82f6",
+      sempre: true,
+      campos: [
+        { chave: "massa1", rotulo: "Massa 1 (m₁)", cor: "#3b82f6", min: 1, max: 100, passo: 1, padrao: 60 },
+        { chave: "massa2", rotulo: "Massa 2 (m₂)", cor: "#ef4444", min: 1, max: 100, passo: 1, padrao: 60 },
+        { chave: "distancia", rotulo: "Distância (d)", cor: "#f59e0b", min: 2, max: 20, passo: 1, padrao: 6 }
+      ],
+      calcular(estado) { estado.forca = (6.674e-11 * estado.massa1 * estado.massa2) / (estado.distancia * estado.distancia); },
+      textoAoVivo(estado) { return "F = 6,67×10⁻¹¹·" + formatarNumero(estado.massa1) + "·" + formatarNumero(estado.massa2) + " / " + formatarNumero(estado.distancia) + "² = <b>" + formatarNumero(estado.forca) + " N</b>"; },
+      desenhar(svg, estado) {
+        svg.setAttribute("viewBox", "0 0 500 360");
+        const tempo = Date.now() / 1000;
+        const balanco = Math.sin(tempo * 1.4) * 3;
+        const yCentro = 180 + balanco;
+        const distancia = limitar(estado.distancia, 2, 20);
+        const escala = 230 / 20;
+        const raio1 = 8 + estado.massa1 * 0.14, raio2 = 8 + estado.massa2 * 0.14;
+        const metadeDistancia = (distancia * escala) / 2;
+        const xMassa1 = 250 - metadeDistancia, xMassa2 = 250 + metadeDistancia;
+        const entrePlanetas = xMassa2 - raio2 - xMassa1 - raio1;
+        const afastamentoFlecha = Math.max(entrePlanetas - 16, 0);
+        const emContato = entrePlanetas <= 0;
+        const sacudida = emContato ? Math.sin(tempo * 30) * 1.6 : 0;
+        const yMassa1 = yCentro + sacudida, yMassa2 = yCentro - sacudida;
+        let desenho =
+          '<circle cx="' + xMassa1 + '" cy="' + yMassa1.toFixed(1) + '" r="' + raio1 + '" fill="' + (emContato ? "rgba(251,191,36,0.75)" : "rgba(59,130,246,0.5)") + '" stroke="#3b82f6" stroke-width="2.5"/>' +
+          '<text x="' + xMassa1 + '" y="' + (yMassa1 + raio1 + 20).toFixed(1) + '" text-anchor="middle" font-size="13" font-weight="800" ' + contornoPreto("#60a5fa") + ">m₁ = " + formatarNumero(estado.massa1) + "</text>" +
+          '<circle cx="' + xMassa2 + '" cy="' + yMassa2.toFixed(1) + '" r="' + raio2 + '" fill="' + (emContato ? "rgba(251,191,36,0.75)" : "rgba(239,68,68,0.5)") + '" stroke="#ef4444" stroke-width="2.5"/>' +
+          '<text x="' + xMassa2 + '" y="' + (yMassa2 + raio2 + 20).toFixed(1) + '" text-anchor="middle" font-size="13" font-weight="800" ' + contornoPreto("#f87171") + ">m₂ = " + formatarNumero(estado.massa2) + "</text>";
+        if (!emContato) {
+          desenho += '<line x1="' + (xMassa1 + raio1) + '" y1="' + yMassa1.toFixed(1) + '" x2="' + (xMassa2 - raio2) + '" y2="' + yMassa2.toFixed(1) + '" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5 4"/>';
+        }
+        desenho += '<text x="250" y="' + (yCentro - 16).toFixed(1) + '" text-anchor="middle" font-size="13" font-weight="700" ' + contornoPreto("#fbbf24") + ">d = " + formatarNumero(estado.distancia) + "</text>";
+        if (afastamentoFlecha > 0) {
+          const meioFlecha1 = xMassa1 + raio1 + afastamentoFlecha / 2, meioFlecha2 = xMassa2 - raio2 - afastamentoFlecha / 2;
+          desenho +=
+            '<line x1="' + (xMassa1 + raio1 + 6) + '" y1="' + yMassa1.toFixed(1) + '" x2="' + meioFlecha1.toFixed(1) + '" y2="' + yMassa1.toFixed(1) + '" stroke="#60a5fa" stroke-width="3"/>' +
+            '<polygon points="' + meioFlecha1.toFixed(1) + "," + yMassa1.toFixed(1) + " " + (meioFlecha1 - 11).toFixed(1) + "," + (yMassa1 - 6).toFixed(1) + " " + (meioFlecha1 - 11).toFixed(1) + "," + (yMassa1 + 6).toFixed(1) + '" fill="#60a5fa"/>' +
+            '<line x1="' + (xMassa2 - raio2 - 6) + '" y1="' + yMassa2.toFixed(1) + '" x2="' + meioFlecha2.toFixed(1) + '" y2="' + yMassa2.toFixed(1) + '" stroke="#f87171" stroke-width="3"/>' +
+            '<polygon points="' + meioFlecha2.toFixed(1) + "," + yMassa2.toFixed(1) + " " + (meioFlecha2 + 11).toFixed(1) + "," + (yMassa2 - 6).toFixed(1) + " " + (meioFlecha2 + 11).toFixed(1) + "," + (yMassa2 + 6).toFixed(1) + '" fill="#f87171"/>';
+        }
+        if (emContato) {
+          const ondaChoque = (tempo % 1.1) / 1.1;
+          const raioChoque = 20 + ondaChoque * 90;
+          desenho +=
+            '<circle cx="250" cy="' + yCentro.toFixed(1) + '" r="' + raioChoque.toFixed(1) + '" fill="none" stroke="#fbbf24" stroke-width="3" opacity="' + (1 - ondaChoque).toFixed(2) + '"/>' +
+            '<circle cx="250" cy="' + yCentro.toFixed(1) + '" r="' + (raioChoque * 0.6).toFixed(1) + '" fill="none" stroke="#f87171" stroke-width="2" opacity="' + ((1 - ondaChoque) * 0.6).toFixed(2) + '"/>' +
+            '<circle cx="250" cy="' + yCentro.toFixed(1) + '" r="' + (14 + Math.sin(tempo * 8) * 6).toFixed(1) + '" fill="rgba(251,191,36,0.5)"/>' +
+            '<text x="250" y="' + (yCentro - 44).toFixed(1) + '" text-anchor="middle" font-size="19" font-weight="900" ' + contornoPreto("#fbbf24") + ">COLISÃO!</text>";
+        }
+        desenho += '<text x="250" y="' + (yCentro + 42).toFixed(1) + '" text-anchor="middle" font-size="16" font-weight="800" ' + contornoPreto("#4ade80") + ">F = " + formatarNumero(estado.forca) + " N</text>";
+        svg.innerHTML = desenho;
+      }
+    };
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

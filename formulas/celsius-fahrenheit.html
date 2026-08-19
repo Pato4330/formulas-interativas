@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Celsius para Fahrenheit · Fórmulas Interativas</title>
+  <link rel="stylesheet" href="../css/estilo.css">
+</head>
+<body>
+  <main id="app"></main>
+  <script src="../js/utilitarios.js"></script>
+  <script>
+    "use strict";
+    const formula = {
+      titulo: "Celsius para Fahrenheit",
+      categoria: "Matemática",
+      descricao: "°F = °C·9/5 + 32. Ajuste a temperatura e compare nos dois termômetros.",
+      formula: "°F = °C·9/5 + 32",
+      cor: "#f97316",
+      sempre: true,
+      campos: [
+        { chave: "c", rotulo: "Temperatura (°C)", cor: "#f97316", min: -40, max: 100, passo: 1, padrao: 25 }
+      ],
+      calcular(estado) { estado.f = (estado.c * 9) / 5 + 32; },
+      textoAoVivo(estado) {
+        return "<b>" + formatarNumero(estado.c) + " °C</b> = <b>" + formatarNumero(estado.f) + " °F</b>";
+      },
+      desenhar(svg, estado) {
+        svg.setAttribute("viewBox", "0 0 500 440");
+        const tempo = Date.now() / 1000;
+        const topo = 40, base = 330, larguraTubo = 46;
+        const centroC = 145, centroF = 355;
+        const alturaC = limitar((estado.c + 40) / 140, 0, 1) * (base - topo);
+        const alturaF = limitar((estado.f + 40) / 252, 0, 1) * (base - topo);
+        const raioBulbo = 26;
+        const bolhas = (centro, calor, superficieY) => {
+          let saida = "";
+          const quantidade = Math.round(1 + calor * 6);
+          const velocidade = 0.35 + calor * 1.5;
+          for (let i = 0; i < quantidade; i++) {
+            const fracaoBolha = (tempo * velocidade + i / quantidade) % 1;
+            const bolhaY = Math.max(superficieY - fracaoBolha * 90, topo + 8);
+            const bolhaX = centro + Math.sin(tempo * 3 + i * 2.1) * 7;
+            saida += '<circle cx="' + bolhaX.toFixed(1) + '" cy="' + bolhaY.toFixed(1) + '" r="' + (2.5 + calor * 3 + (i % 3) * 0.8).toFixed(1) + '" fill="rgba(255,255,255,' + (0.25 + calor * 0.45).toFixed(2) + ')"/>';
+          }
+          return saida;
+        };
+        svg.innerHTML =
+          '<rect x="' + (centroC - larguraTubo / 2) + '" y="' + topo + '" width="' + larguraTubo + '" height="' + (base - topo) + '" rx="' + larguraTubo / 2 + '" fill="none" stroke="#94a3b8" stroke-width="2"/>' +
+          '<rect x="' + (centroC - larguraTubo / 2) + '" y="' + (base - alturaC) + '" width="' + larguraTubo + '" height="' + alturaC + '" rx="' + larguraTubo / 2 + '" fill="rgba(239,68,68,0.6)"/>' +
+          '<circle cx="' + centroC + '" cy="' + (base + raioBulbo - 2) + '" r="' + raioBulbo + '" fill="rgba(239,68,68,0.6)" stroke="#94a3b8" stroke-width="2"/>' +
+          bolhas(centroC, limitar((estado.c + 40) / 140, 0, 1), base - alturaC) +
+          '<text x="' + centroC + '" y="' + (base + raioBulbo * 2 + 26) + '" text-anchor="middle" font-size="15" font-weight="800" ' + contornoPreto("#f87171") + ">" + formatarNumero(estado.c) + " °C</text>" +
+          '<rect x="' + (centroF - larguraTubo / 2) + '" y="' + topo + '" width="' + larguraTubo + '" height="' + (base - topo) + '" rx="' + larguraTubo / 2 + '" fill="none" stroke="#94a3b8" stroke-width="2"/>' +
+          '<rect x="' + (centroF - larguraTubo / 2) + '" y="' + (base - alturaF) + '" width="' + larguraTubo + '" height="' + alturaF + '" rx="' + larguraTubo / 2 + '" fill="rgba(249,115,22,0.6)"/>' +
+          '<circle cx="' + centroF + '" cy="' + (base + raioBulbo - 2) + '" r="' + raioBulbo + '" fill="rgba(249,115,22,0.6)" stroke="#94a3b8" stroke-width="2"/>' +
+          bolhas(centroF, limitar((estado.f + 40) / 252, 0, 1), base - alturaF) +
+          '<text x="' + centroF + '" y="' + (base + raioBulbo * 2 + 26) + '" text-anchor="middle" font-size="15" font-weight="800" ' + contornoPreto("#fb923c") + ">" + formatarNumero(estado.f) + " °F</text>";
+      }
+    };
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

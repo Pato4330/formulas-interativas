@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Área do Retângulo · Fórmulas Interativas</title>
+  <link rel="stylesheet" href="../css/estilo.css">
+</head>
+<body>
+  <main id="app"></main>
+  <script src="../js/utilitarios.js"></script>
+  <script>
+    "use strict";
+    const formula = {
+      titulo: "Área do Retângulo",
+      categoria: "Matemática",
+      descricao: "Área A = b·h e perímetro P = 2(b + h).",
+      formula: "A = b·h · P = 2(b+h)",
+      cor: "#3b82f6",
+      sempre: true,
+      campos: [
+        { chave: "b", rotulo: "Base (b)", cor: "#3b82f6", min: 1, max: 10, passo: 0.1, padrao: 7 },
+        { chave: "h", rotulo: "Altura (h)", cor: "#ef4444", min: 1, max: 10, passo: 0.1, padrao: 4 }
+      ],
+      calcular(estado) { estado.A = estado.b * estado.h; estado.P = 2 * (estado.b + estado.h); },
+      textoAoVivo(estado) {
+        return "A = <span class=\"b\">" + formatarNumero(estado.b) + "</span> · <span class=\"a\">" + formatarNumero(estado.h) + "</span> = <b>" + formatarNumero(estado.A) + "</b><br>P = 2(" + formatarNumero(estado.b) + " + " + formatarNumero(estado.h) + ") = <b>" + formatarNumero(estado.P) + "</b>";
+      },
+      desenhar(svg, estado) {
+        svg.setAttribute("viewBox", "0 0 500 480");
+        const tempo = Date.now() / 1000;
+        const xInicio = 70, yInicio = 80, areaMaxima = 400;
+        const base = limitar(estado.b, 1, 10), altura = limitar(estado.h, 1, 10);
+        const escalaBase = areaMaxima / Math.max(base, 10), escalaAltura = areaMaxima / Math.max(altura, 10);
+        const largura = base * escalaBase, alturaDesenho = altura * escalaAltura;
+        const perimetro = 2 * (largura + alturaDesenho);
+        const distanciaPercorrida = (tempo * 0.5 * perimetro) % perimetro;
+        let bolaX = xInicio, bolaY = yInicio;
+        if (distanciaPercorrida <= largura) { bolaX = xInicio + distanciaPercorrida; bolaY = yInicio; }
+        else if (distanciaPercorrida <= largura + alturaDesenho) { bolaX = xInicio + largura; bolaY = yInicio + (distanciaPercorrida - largura); }
+        else if (distanciaPercorrida <= 2 * largura + alturaDesenho) { bolaX = xInicio + largura - (distanciaPercorrida - largura - alturaDesenho); bolaY = yInicio + alturaDesenho; }
+        else { bolaX = xInicio; bolaY = yInicio + alturaDesenho - (distanciaPercorrida - 2 * largura - alturaDesenho); }
+        svg.innerHTML =
+          '<rect x="' + xInicio + '" y="' + yInicio + '" width="' + largura + '" height="' + alturaDesenho + '" fill="rgba(96,165,250,0.15)" stroke="#3b82f6" stroke-width="3"/>' +
+          '<text x="' + (xInicio + largura / 2) + '" y="' + (yInicio + alturaDesenho + 26) + '" text-anchor="middle" font-size="16" font-weight="800" ' + contornoPreto("#60a5fa") + ">b = " + formatarNumero(estado.b) + "</text>" +
+          '<text x="' + (xInicio + largura - 16) + '" y="' + (yInicio + alturaDesenho / 2) + '" text-anchor="end" font-size="16" font-weight="800" ' + contornoPreto("#f87171") + ">h = " + formatarNumero(estado.h) + "</text>" +
+          '<text x="' + (xInicio + largura / 2) + '" y="' + (yInicio - 16) + '" text-anchor="middle" font-size="16" font-weight="800" ' + contornoPreto("#4ade80") + ">A = " + formatarNumero(estado.A) + "</text>" +
+          '<text x="' + (xInicio + largura / 2) + '" y="' + (yInicio + alturaDesenho - 20) + '" text-anchor="middle" font-size="13" font-weight="700" ' + contornoPreto("#86efac") + ">P = " + formatarNumero(estado.P) + "</text>" +
+          '<circle cx="' + bolaX.toFixed(1) + '" cy="' + bolaY.toFixed(1) + '" r="6" fill="#3b82f6" stroke="#fff" stroke-width="1.5"/>';
+      }
+    };
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

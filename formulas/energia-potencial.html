@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Energia Potencial Gravitacional · Fórmulas Interativas</title>
+  <link rel="stylesheet" href="../css/estilo.css">
+</head>
+<body>
+  <main id="app"></main>
+  <script src="../js/utilitarios.js"></script>
+  <script>
+    "use strict";
+    const formula = {
+      titulo: "Energia Potencial Gravitacional",
+      descricao: "A energia armazenada pela altura: Ep = m·g·h (g = 9,8 m/s²).",
+      formula: "Ep = m·g·h",
+      cor: "#f59e0b",
+      sempre: true,
+      campos: [
+        { chave: "massa", rotulo: "Massa (m)", cor: "#3b82f6", min: 1, max: 20, passo: 0.1, padrao: 5 },
+        { chave: "altura", rotulo: "Altura (h)", cor: "#ef4444", min: 0, max: 50, passo: 0.5, padrao: 10 }
+      ],
+      calcular(estado) { estado.energiaPotencial = estado.massa * 9.8 * estado.altura; },
+      textoAoVivo(estado) { return "Ep = <span class=\"b\">" + formatarNumero(estado.massa) + "</span>·9,8·<span class=\"a\">" + formatarNumero(estado.altura) + "</span> = <b>" + formatarNumero(estado.energiaPotencial) + " J</b>"; },
+      desenhar(svg, estado) {
+        svg.setAttribute("viewBox", "0 0 480 460");
+        const tempo = Date.now() / 1000;
+        const chao = 410, centroX = 170;
+        const altura = limitar(estado.altura, 0, 50);
+        const yTopo = chao - (altura / 50) * 380 + Math.sin(tempo * 1.8) * 3;
+        const larguraBloco = 90, alturaBloco = 40, xBloco = centroX - larguraBloco / 2;
+        const larguraSombra = 40 - (altura / 50) * 14;
+        svg.innerHTML =
+          '<line x1="30" y1="' + chao + '" x2="450" y2="' + chao + '" stroke="#cbd5e1" stroke-width="3"/>' +
+          '<ellipse cx="' + centroX + '" cy="' + chao + '" rx="' + larguraSombra + '" ry="5" fill="rgba(0,0,0,0.35)"/>' +
+          '<line x1="' + centroX + '" y1="' + chao + '" x2="' + centroX + '" y2="' + yTopo + '" stroke="#64748b" stroke-width="2" stroke-dasharray="6 4"/>' +
+          '<rect x="' + xBloco + '" y="' + yTopo + '" width="' + larguraBloco + '" height="' + alturaBloco + '" rx="6" fill="rgba(239,68,68,0.35)" stroke="#ef4444" stroke-width="3"/>' +
+          '<text x="' + centroX + '" y="' + ((chao + yTopo) / 2) + '" text-anchor="end" font-size="15" font-weight="800" ' + contornoPreto("#f87171") + ">h = " + formatarNumero(estado.altura) + " m</text>" +
+          '<text x="' + centroX + '" y="' + (yTopo - 14) + '" text-anchor="middle" font-size="16" font-weight="800" ' + contornoPreto("#fbbf24") + ">Ep = " + formatarNumero(estado.energiaPotencial) + " J</text>" +
+          '<text x="' + centroX + '" y="' + (chao + 32) + '" text-anchor="middle" font-size="14" font-weight="700" ' + contornoPreto("#93c5fd") + ">m = " + formatarNumero(estado.massa) + " kg</text>";
+      }
+    };
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

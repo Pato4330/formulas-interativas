@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Movimento Uniformemente Variado · Fórmulas Interativas</title>
+  <link rel="stylesheet" href="../css/estilo.css">
+</head>
+<body>
+  <main id="app"></main>
+  <script src="../js/utilitarios.js"></script>
+  <script>
+    "use strict";
+    const formula = {
+      titulo: "Movimento Uniformemente Variado",
+      descricao: "A velocidade muda com aceleração constante: v = v₀ + a·t.",
+      formula: "v = v₀ + a·t",
+      cor: "#8b5cf6",
+      sempre: true,
+      campos: [
+        { chave: "velocidadeInicial", rotulo: "Vel. inicial (v₀)", cor: "#3b82f6", min: 0, max: 30, passo: 1, padrao: 10 },
+        { chave: "aceleracao", rotulo: "Aceleração (a)", cor: "#f59e0b", min: -5, max: 5, passo: 0.5, padrao: 2 },
+        { chave: "tempo", rotulo: "Tempo (t)", cor: "#22c55e", min: 0, max: 10, passo: 0.5, padrao: 3 }
+      ],
+      calcular(estado) { estado.velocidade = estado.velocidadeInicial + estado.aceleracao * estado.tempo; },
+      textoAoVivo(estado) { return "v = " + formatarNumero(estado.velocidadeInicial) + " + (" + formatarNumero(estado.aceleracao) + ")·" + formatarNumero(estado.tempo) + " = <b>" + formatarNumero(estado.velocidade) + " m/s</b>"; },
+      desenhar(svg, estado) {
+        svg.setAttribute("viewBox", "0 0 500 500");
+        const tempo = limitar(estado.tempo, 0, 10);
+        const velocidade = estado.velocidadeInicial + estado.aceleracao * tempo;
+        const velMinima = Math.min(estado.velocidadeInicial + Math.min(0, estado.aceleracao) * 10, 0);
+        const velMaxima = Math.max(estado.velocidadeInicial + Math.max(0, estado.aceleracao) * 10, 5);
+        const plano = planoCartesiano(0, 10, velMinima - 2, velMaxima + 2);
+        const tempoAnimacao = Date.now() / 1000;
+        const fatorMovimento = (tempoAnimacao * 0.3) % 1;
+        const xMovel = fatorMovimento * 10, yMovel = estado.velocidadeInicial + estado.aceleracao * xMovel;
+        let desenho = plano.grade +
+          '<line x1="' + plano.xParaPixels(0) + '" y1="' + plano.yParaPixels(estado.velocidadeInicial) + '" x2="' + plano.xParaPixels(10) + '" y2="' + plano.yParaPixels(estado.velocidadeInicial + estado.aceleracao * 10) + '" stroke="#8b5cf6" stroke-width="3" stroke-linecap="round"/>' +
+          '<circle cx="' + plano.xParaPixels(tempo) + '" cy="' + plano.yParaPixels(velocidade) + '" r="7" fill="#8b5cf6" stroke="#0b1020" stroke-width="2"/>' +
+          '<text x="' + plano.xParaPixels(tempo) + '" y="' + (plano.yParaPixels(velocidade) - 14) + '" text-anchor="middle" font-size="15" font-weight="800" ' + contornoPreto("#c4b5fd") + ">v = " + formatarNumero(velocidade) + "</text>" +
+          '<text x="' + (plano.xParaPixels(10) + 6) + '" y="' + (plano.yParaPixels(estado.velocidadeInicial + estado.aceleracao * 10) - 10) + '" text-anchor="start" font-size="13" fill="#a78bfa">v (m/s)</text>';
+        if (yMovel >= velMinima - 2 && yMovel <= velMaxima + 2) {
+          desenho += '<circle cx="' + plano.xParaPixels(xMovel) + '" cy="' + plano.yParaPixels(yMovel) + '" r="6" fill="#fbbf24" stroke="#0b1020" stroke-width="1.5"/>';
+        }
+        svg.innerHTML = desenho;
+      }
+    };
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

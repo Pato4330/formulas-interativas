@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Densidade · Fórmulas Interativas</title>
+  <link rel="stylesheet" href="../css/estilo.css">
+</head>
+<body>
+  <main id="app"></main>
+  <script src="../js/utilitarios.js"></script>
+  <script>
+    "use strict";
+    const formula = {
+      titulo: "Densidade",
+      descricao: "Densidade = massa/volume: ρ = m/V. Compare com a água (ρ = 1): flutua ou afunda?",
+      formula: "ρ = m / V",
+      cor: "#22c55e",
+      sempre: true,
+      campos: [
+        { chave: "massa", rotulo: "Massa (m)", cor: "#3b82f6", min: 1, max: 100, passo: 1, padrao: 50 },
+        { chave: "volume", rotulo: "Volume (V)", cor: "#22c55e", min: 1, max: 100, passo: 1, padrao: 50 }
+      ],
+      calcular(estado) { estado.densidade = estado.massa / estado.volume; estado.flutua = estado.densidade <= 1; },
+      textoAoVivo(estado) { return "ρ = <span class=\"b\">" + formatarNumero(estado.massa) + "</span> / <span class=\"a\">" + formatarNumero(estado.volume) + "</span> = <b>" + formatarNumero(estado.densidade) + "</b> g/cm³ " + (estado.flutua ? "(flutua)" : "(afunda)"); },
+      desenhar(svg, estado) {
+        svg.setAttribute("viewBox", "0 0 480 440");
+        const tempo = Date.now() / 1000;
+        const xTanque = 110, larguraTanque = 260, yAgua = 90, baseTanque = 390;
+        const tamanhoCubo = 24 + (limitar(estado.volume, 1, 100) / 100) * 70;
+        const centroX = xTanque + larguraTanque / 2;
+        const flutua = estado.massa <= estado.volume;
+        const balanco = flutua ? Math.sin(tempo * 2.2) * 5 : 0;
+        const yFlutuacao = flutua ? yAgua + 10 + balanco : baseTanque - tamanhoCubo;
+        const inclinacao = flutua ? Math.sin(tempo * 1.7) * 2.5 : 0;
+        const rotacao = ' transform="rotate(' + inclinacao.toFixed(1) + ' ' + centroX + ' ' + (yFlutuacao + tamanhoCubo / 2) + ')"';
+        const ondulacao = (tempo % 1.6) / 1.6;
+        let desenho =
+          '<rect x="' + xTanque + '" y="' + yAgua + '" width="' + larguraTanque + '" height="' + (baseTanque - yAgua) + '" fill="rgba(59,130,246,0.18)" stroke="#3b82f6" stroke-width="2.5"/>' +
+          '<rect x="' + xTanque + '" y="' + yAgua + '" width="' + larguraTanque + '" height="18" fill="rgba(147,197,253,0.5)"/>' +
+          '<text x="' + centroX + '" y="' + (yAgua - 12) + '" text-anchor="middle" font-size="13" font-weight="700" fill="#93c5fd">água (ρ = 1)</text>' +
+          '<g' + rotacao + '>' +
+          '<rect x="' + (centroX - tamanhoCubo / 2) + '" y="' + yFlutuacao + '" width="' + tamanhoCubo + '" height="' + tamanhoCubo + '" rx="6" fill="rgba(239,68,68,0.4)" stroke="#ef4444" stroke-width="3"/>' +
+          '<text x="' + centroX + '" y="' + (yFlutuacao + tamanhoCubo / 2 + 5) + '" text-anchor="middle" font-size="13" font-weight="800" ' + contornoPreto("#f87171") + ">ρ = " + formatarNumero(estado.densidade) + "</text>" +
+          "</g>";
+        if (flutua) {
+          desenho += '<ellipse cx="' + centroX + '" cy="' + (yFlutuacao + tamanhoCubo + 6) + '" rx="' + (tamanhoCubo * 0.7 + ondulacao * 46).toFixed(1) + '" ry="7" fill="none" stroke="rgba(147,197,253,0.7)" stroke-width="2"/>';
+        }
+        desenho += '<text x="' + centroX + '" y="' + (baseTanque + 28) + '" text-anchor="middle" font-size="14" font-weight="800" ' + contornoPreto("#f1f5f9") + ">m = " + formatarNumero(estado.massa) + " g · V = " + formatarNumero(estado.volume) + " cm³</text>";
+        svg.innerHTML = desenho;
+      }
+    };
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

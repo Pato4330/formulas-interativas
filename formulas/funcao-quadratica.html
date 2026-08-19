@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Função Quadrática · Fórmulas Interativas</title>
+  <link rel="stylesheet" href="../css/estilo.css">
+</head>
+<body>
+  <main id="app"></main>
+  <script src="../js/utilitarios.js"></script>
+  <script>
+    "use strict";
+    const formula = {
+      titulo: "Função Quadrática",
+      categoria: "Matemática",
+      descricao: "y = ax² + bx + c. Veja a parábola, o vértice e as raízes mudarem ao vivo.",
+      formula: "y = ax² + bx + c",
+      cor: "#f59e0b",
+      sempre: true,
+      campos: [
+        { chave: "a", rotulo: "Coef. a", cor: "#f59e0b", min: -3, max: 3, passo: 0.1, padrao: 1 },
+        { chave: "b", rotulo: "Coef. b", cor: "#ef4444", min: -6, max: 6, passo: 0.1, padrao: -2 },
+        { chave: "c", rotulo: "Coef. c", cor: "#3b82f6", min: -6, max: 6, passo: 0.1, padrao: -3 }
+      ],
+      campoEspecial: {
+        a: (estado, valor) => { estado.a = valor < 0 ? limitar(valor, -3, -0.1) : limitar(valor, 0.1, 3); }
+      },
+      calcular(estado) { estado.delta = estado.b * estado.b - 4 * estado.a * estado.c; },
+      textoAoVivo(estado) {
+        let texto = "y = <span class=\"a\">" + formatarNumero(estado.a) + "</span>x² " +
+          '<span class="b">' + comSinal(estado.b) + "</span>x " +
+          '<span class="c">' + comSinal(estado.c) + "</span><br>Δ = " + formatarNumero(estado.delta);
+        if (estado.delta >= 0) {
+          const raiz1 = (-estado.b - Math.sqrt(estado.delta)) / (2 * estado.a);
+          const raiz2 = (-estado.b + Math.sqrt(estado.delta)) / (2 * estado.a);
+          texto += "<br>x₁ = " + formatarNumero(raiz1) + ", x₂ = " + formatarNumero(raiz2);
+        }
+        return texto;
+      },
+      desenhar(svg, estado) {
+        svg.setAttribute("viewBox", "0 0 500 500");
+        const plano = planoCartesiano(-7, 7, -12, 12);
+        let caminho = "", escrevendo = false;
+        const PASSOS = 90;
+        for (let i = 0; i <= PASSOS; i++) {
+          const x = -7 + (14 * i) / PASSOS;
+          const y = estado.a * x * x + estado.b * x + estado.c;
+          const dentro = y >= -12 && y <= 12;
+          if (dentro) { caminho += (escrevendo ? "L" : "M") + plano.xParaPixels(x).toFixed(2) + " " + plano.yParaPixels(y).toFixed(2); escrevendo = true; }
+          else escrevendo = false;
+        }
+        let saida = plano.grade;
+        saida += '<path d="' + caminho + '" fill="none" stroke="#f59e0b" stroke-width="3.5" stroke-linecap="round"/>';
+        const verticeX = -estado.b / (2 * estado.a), verticeY = estado.a * verticeX * verticeX + estado.b * verticeX + estado.c;
+        if (verticeX >= -7 && verticeX <= 7 && verticeY >= -12 && verticeY <= 12) {
+          saida += '<circle cx="' + plano.xParaPixels(verticeX) + '" cy="' + plano.yParaPixels(verticeY) + '" r="5.5" fill="#fff" stroke="#f59e0b" stroke-width="2.5"/>';
+          saida += '<text x="' + (plano.xParaPixels(verticeX) + 12) + '" y="' + (plano.yParaPixels(verticeY) - 8) + '" font-size="13" font-weight="700" ' + contornoPreto("#fbbf24") + ">vértice (" + formatarNumero(verticeX) + ", " + formatarNumero(verticeY) + ")</text>";
+        }
+        if (estado.delta >= 0) {
+          const raiz1 = (-estado.b - Math.sqrt(estado.delta)) / (2 * estado.a);
+          const raiz2 = (-estado.b + Math.sqrt(estado.delta)) / (2 * estado.a);
+          [raiz1, raiz2].forEach((raiz) => {
+            if (raiz >= -7 && raiz <= 7) {
+              saida += '<circle cx="' + plano.xParaPixels(raiz) + '" cy="' + plano.yParaPixels(0) + '" r="6" fill="#22c55e" stroke="#fff" stroke-width="1.5"/>';
+              saida += '<text x="' + (plano.xParaPixels(raiz)) + '" y="' + (plano.yParaPixels(0) + 20) + '" text-anchor="middle" font-size="13" font-weight="700" ' + contornoPreto("#4ade80") + ">x = " + formatarNumero(raiz) + "</text>";
+            }
+          });
+        }
+        const tempo = Date.now() / 1000;
+        const fracao = (tempo * 0.35) % 1;
+        const bolaX = -7 + fracao * 14;
+        const bolaY = estado.a * bolaX * bolaX + estado.b * bolaX + estado.c;
+        if (bolaY >= -12 && bolaY <= 12) {
+          saida += '<circle cx="' + plano.xParaPixels(bolaX) + '" cy="' + plano.yParaPixels(bolaY) + '" r="6" fill="#fbbf24" stroke="#0b1020" stroke-width="1.5"/>';
+        }
+        svg.innerHTML = saida;
+      }
+    };
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

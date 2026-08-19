@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Progressão Aritmética · Fórmulas Interativas</title>
+  <link rel="stylesheet" href="../css/estilo.css">
+</head>
+<body>
+  <main id="app"></main>
+  <script src="../js/utilitarios.js"></script>
+  <script>
+    "use strict";
+    const formula = {
+      titulo: "Progressão Aritmética",
+      categoria: "Matemática",
+      descricao: "Cada termo é o anterior mais a razão: aₙ = a₁ + (n − 1)·r.",
+      formula: "aₙ = a₁ + (n − 1)·r",
+      cor: "#f59e0b",
+      sempre: true,
+      campos: [
+        { chave: "a1", rotulo: "1º termo (a₁)", cor: "#3b82f6", min: -8, max: 10, passo: 0.5, padrao: 2 },
+        { chave: "r", rotulo: "Razão (r)", cor: "#ef4444", min: -3, max: 3, passo: 0.5, padrao: 2 },
+        { chave: "n", rotulo: "Termos (n)", cor: "#22c55e", min: 2, max: 12, passo: 1, padrao: 6 }
+      ],
+      calcular(estado) { estado.an = estado.a1 + (estado.n - 1) * estado.r; estado.soma = ((estado.a1 + estado.an) * estado.n) / 2; },
+      textoAoVivo(estado) {
+        return "a<sub>" + formatarNumero(estado.n) + "</sub> = " + formatarNumero(estado.a1) + " + (" + formatarNumero(estado.n) + "−1)·" + formatarNumero(estado.r) + " = <b>" + formatarNumero(estado.an) + "</b><br>Sₙ = <b>" + formatarNumero(estado.soma) + "</b>";
+      },
+      desenhar(svg, estado) {
+        svg.setAttribute("viewBox", "0 0 500 440");
+        const tempo = Date.now() / 1000;
+        const quantidade = Math.round(limitar(estado.n, 2, 12));
+        const termos = [];
+        for (let i = 0; i < quantidade; i++) termos.push(estado.a1 + i * estado.r);
+        const menorValor = Math.min(...termos, 0) - 1, maiorValor = Math.max(...termos, 0) + 1;
+        const xPara = (valor) => 40 + ((valor - menorValor) / (maiorValor - menorValor)) * 420;
+        const yLinha = 250;
+        let saida = '<line x1="40" y1="' + yLinha + '" x2="460" y2="' + yLinha + '" stroke="#cbd5e1" stroke-width="2"/>';
+        termos.forEach((valor, i) => {
+          const xPos = xPara(valor);
+          const cor = i === quantidade - 1 ? "#f59e0b" : i === 0 ? "#3b82f6" : "#22c55e";
+          saida += '<circle cx="' + xPos + '" cy="' + yLinha + '" r="6" fill="' + cor + '" stroke="#fff" stroke-width="1.5"/>';
+          saida += '<text x="' + xPos + '" y="' + (yLinha + 26) + '" text-anchor="middle" font-size="12" font-weight="700" ' + contornoPreto("#d1fae5") + ">a" + (i + 1) + "</text>" +
+            '<text x="' + xPos + '" y="' + (yLinha - 12) + '" text-anchor="middle" font-size="13" font-weight="800" ' + contornoPreto("#f1f5f9") + ">" + formatarNumero(valor) + "</text>";
+          const onda = ((tempo * 0.8 - i / Math.max(quantidade, 1)) % 1 + 1) % 1;
+          if (onda < 0.4) {
+            saida += '<circle cx="' + xPos + '" cy="' + yLinha + '" r="' + (8 + onda * 30).toFixed(1) + '" fill="none" stroke="#fbbf24" stroke-width="2" opacity="' + (1 - onda / 0.4).toFixed(2) + '"/>';
+          }
+        });
+        svg.innerHTML = saida;
+      }
+    };
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Teorema de Pitágoras · Fórmulas Interativas</title>
+  <link rel="stylesheet" href="../css/estilo.css">
+</head>
+<body>
+  <main id="app"></main>
+  <script src="../js/utilitarios.js"></script>
+  <script>
+    "use strict";
+    const formula = {
+      titulo: "Teorema de Pitágoras",
+      categoria: "Matemática",
+      descricao: "No triângulo retângulo, o quadrado da hipotenusa é igual à soma dos quadrados dos catetos.",
+      formula: "a² + b² = c²",
+      cor: "#3b82f6",
+      sempre: true,
+      campos: [
+        { chave: "a", rotulo: "Cateto A", cor: "#3b82f6", min: 0, max: 100, passo: 0.1, padrao: 3 },
+        { chave: "b", rotulo: "Cateto B", cor: "#ef4444", min: 0, max: 100, passo: 0.1, padrao: 4 },
+        { chave: "c", rotulo: "Hipotenusa", cor: "#22c55e", min: 0, max: 142, passo: 0.1, padrao: 5 }
+      ],
+      campoEspecial: {
+        c: (estado, valor) => {
+          const atual = Math.hypot(estado.a, estado.b);
+          if (atual <= 0) { const t = limitar(valor, 0, 142) / Math.SQRT2; estado.a = t; estado.b = t; }
+          else { const k = limitar(valor, 0, 142) / atual; estado.a = Math.min(estado.a * k, 100); estado.b = Math.min(estado.b * k, 100); }
+        }
+      },
+      calcular(estado) { estado.c = Math.hypot(estado.a, estado.b); },
+      textoAoVivo(estado) {
+        return '<span class="a">' + formatarNumero(estado.a) + "²</span> + <span class=\"b\">" + formatarNumero(estado.b) + "²</span> = <span class=\"c\">" + formatarNumero(estado.c) + "²</span>";
+      },
+      desenhar(svg, estado) {
+        const TAMANHO = 704, ESCALA = 30, MAXIMO = 20, MARGEM = 52;
+        svg.setAttribute("viewBox", "0 0 " + TAMANHO + " " + TAMANHO);
+        const tempo = Date.now() / 1000;
+        const origemY = MARGEM + MAXIMO * ESCALA;
+        const escala = (MAXIMO * ESCALA) / Math.max(estado.a, estado.b, 1e-9);
+        const verticeAX = MARGEM + estado.a * escala, verticeAY = origemY;
+        const verticeBY = origemY - estado.b * escala;
+        const meioX = (verticeAX + MARGEM) / 2, meioY = (verticeAY + verticeBY) / 2;
+        const quadrado = 14;
+        const anim = (Math.sin(tempo * 1.1) + 1) / 2;
+        const bolaX = verticeAX + (MARGEM - verticeAX) * anim, bolaY = verticeAY + (verticeBY - verticeAY) * anim;
+        svg.innerHTML =
+          '<polygon points="' + MARGEM + "," + origemY + " " + verticeAX + "," + verticeAY + " " + MARGEM + "," + verticeBY + '" fill="rgba(96,165,250,0.14)"/>' +
+          '<line x1="' + MARGEM + '" y1="' + origemY + '" x2="' + verticeAX + '" y2="' + verticeAY + '" stroke="#3b82f6" stroke-width="5" stroke-linecap="round" style="filter:drop-shadow(0 0 7px rgba(59,130,246,0.55))"/>' +
+          '<line x1="' + MARGEM + '" y1="' + origemY + '" x2="' + MARGEM + '" y2="' + verticeBY + '" stroke="#ef4444" stroke-width="5" stroke-linecap="round" style="filter:drop-shadow(0 0 7px rgba(239,68,68,0.55))"/>' +
+          '<line x1="' + verticeAX + '" y1="' + verticeAY + '" x2="' + MARGEM + '" y2="' + verticeBY + '" stroke="#22c55e" stroke-width="5" stroke-linecap="round" style="filter:drop-shadow(0 0 7px rgba(34,197,94,0.55))"/>' +
+          '<polyline points="' + MARGEM + "," + origemY + " " + (MARGEM + quadrado) + "," + origemY + " " + (MARGEM + quadrado) + "," + (origemY - quadrado) + " " + MARGEM + "," + (origemY - quadrado) + '" fill="none" stroke="#9ca3af" stroke-width="2.5"/>' +
+          '<text x="' + (MARGEM + estado.a * escala / 2) + '" y="' + (origemY + 26) + '" text-anchor="middle" font-size="19" font-weight="800" ' + contornoPreto("#60a5fa") + ">" + formatarNumero(estado.a) + "</text>" +
+          '<text x="' + (MARGEM - 14) + '" y="' + ((origemY + verticeBY) / 2 + 6) + '" text-anchor="end" font-size="19" font-weight="800" ' + contornoPreto("#f87171") + ">" + formatarNumero(estado.b) + "</text>" +
+          '<text x="' + (meioX - 18) + '" y="' + (meioY - 18) + '" text-anchor="middle" font-size="19" font-weight="800" ' + contornoPreto("#4ade80") + ">" + formatarNumero(estado.c) + "</text>" +
+          '<circle cx="' + bolaX.toFixed(1) + '" cy="' + bolaY.toFixed(1) + '" r="6" fill="#22c55e" stroke="#fff" stroke-width="1.5"/>';
+      }
+    };
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

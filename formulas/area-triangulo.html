@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Área do Triângulo · Fórmulas Interativas</title>
+  <link rel="stylesheet" href="../css/estilo.css">
+</head>
+<body>
+  <main id="app"></main>
+  <script src="../js/utilitarios.js"></script>
+  <script>
+    "use strict";
+    const formula = {
+      titulo: "Área do Triângulo",
+      categoria: "Matemática",
+      descricao: "Área = (base × altura) ÷ 2.",
+      formula: "A = b·h / 2",
+      cor: "#ef4444",
+      sempre: true,
+      campos: [
+        { chave: "base", rotulo: "Base (b)", cor: "#ef4444", min: 0, max: 10, passo: 0.1, padrao: 6 },
+        { chave: "h", rotulo: "Altura (h)", cor: "#3b82f6", min: 0, max: 10, passo: 0.1, padrao: 4 }
+      ],
+      calcular(estado) { estado.A = (estado.base * estado.h) / 2; },
+      textoAoVivo(estado) {
+        return "A = (" + formatarNumero(estado.base) + " · " + formatarNumero(estado.h) + ") ÷ 2 = <b>" + formatarNumero(estado.A) + "</b>";
+      },
+      desenhar(svg, estado) {
+        svg.setAttribute("viewBox", "0 0 500 500");
+        const tempo = Date.now() / 1000;
+        const largura = 460, margem = 20;
+        const base = limitar(estado.base, 0, 10), altura = limitar(estado.h, 0, 10);
+        const fatorX = largura / Math.max(base, 10), fatorY = 420 / Math.max(altura, 10);
+        const origemX = margem, origemY = margem + 420;
+        const pontaX = origemX + base * fatorX, baseMeioX = origemX + base * fatorX / 2;
+        const topoY = origemY - altura * fatorY;
+        const fatorAnim = (Math.sin(tempo * 1.2) + 1) / 2;
+        const bolaY = topoY + (origemY - topoY) * fatorAnim;
+        svg.innerHTML =
+          '<polygon points="' + origemX + "," + origemY + " " + pontaX + "," + origemY + " " + baseMeioX + "," + topoY + '" fill="rgba(239,68,68,0.14)" stroke="#ef4444" stroke-width="3"/>' +
+          '<line x1="' + baseMeioX + '" y1="' + origemY + '" x2="' + baseMeioX + '" y2="' + topoY + '" stroke="#3b82f6" stroke-width="2" stroke-dasharray="6 4"/>' +
+          '<text x="' + ((origemX + pontaX) / 2) + '" y="' + (origemY + 26) + '" text-anchor="middle" font-size="16" font-weight="800" ' + contornoPreto("#f87171") + ">b = " + formatarNumero(estado.base) + "</text>" +
+          '<text x="' + (baseMeioX - 10) + '" y="' + ((origemY + topoY) / 2) + '" text-anchor="end" font-size="16" font-weight="800" ' + contornoPreto("#60a5fa") + ">h = " + formatarNumero(estado.h) + "</text>" +
+          '<circle cx="' + baseMeioX + '" cy="' + bolaY.toFixed(1) + '" r="6" fill="#3b82f6" stroke="#fff" stroke-width="1.5"/>';
+      }
+    };
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

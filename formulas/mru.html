@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Movimento Uniforme · Fórmulas Interativas</title>
+  <link rel="stylesheet" href="../css/estilo.css">
+</head>
+<body>
+  <main id="app"></main>
+  <script src="../js/utilitarios.js"></script>
+  <script>
+    "use strict";
+    const formula = {
+      titulo: "Movimento Uniforme",
+      descricao: "Posição em função do tempo: s = s₀ + v·t. O gráfico é uma reta cuja inclinação é a velocidade.",
+      formula: "s = s₀ + v·t",
+      cor: "#22c55e",
+      sempre: true,
+      campos: [
+        { chave: "s0", rotulo: "Posição inicial (s₀)", cor: "#3b82f6", min: -10, max: 10, passo: 0.5, padrao: 0 },
+        { chave: "v", rotulo: "Velocidade (v)", cor: "#22c55e", min: 0, max: 10, passo: 0.5, padrao: 2 }
+      ],
+      calcular(estado) { estado.s5 = estado.s0 + estado.v * 5; },
+      textoAoVivo(estado) { return "s = <span class=\"b\">" + formatarNumero(estado.s0) + "</span> + <span class=\"c\">" + formatarNumero(estado.v) + "</span>·t<br>s(5) = <b>" + formatarNumero(estado.s5) + " m</b>"; },
+      desenhar(svg, estado) {
+        svg.setAttribute("viewBox", "0 0 500 500");
+        const plano = planoCartesiano(0, 10, -12, 12);
+        let candidatos = [0, 10];
+        const tempoPara = (posicao) => (estado.v !== 0 ? (posicao - estado.s0) / estado.v : null);
+        const adicionarCandidato = (valor) => { if (valor !== null && valor >= 0 && valor <= 10) candidatos.push(valor); };
+        adicionarCandidato(tempoPara(-12)); adicionarCandidato(tempoPara(12));
+        const inicio = Math.min(...candidatos), fim = Math.max(...candidatos);
+        let resultado = plano.grade;
+        resultado += '<line x1="' + plano.xParaPixels(inicio) + '" y1="' + plano.yParaPixels(estado.s0 + estado.v * inicio) + '" x2="' + plano.xParaPixels(fim) + '" y2="' + plano.yParaPixels(estado.s0 + estado.v * fim) + '" stroke="#22c55e" stroke-width="3.5" stroke-linecap="round"/>';
+        if (estado.s0 >= -12 && estado.s0 <= 12) {
+          resultado += '<circle cx="' + plano.xParaPixels(0) + '" cy="' + plano.yParaPixels(estado.s0) + '" r="5" fill="#3b82f6" stroke="#fff" stroke-width="1.5"/>';
+          resultado += '<text x="' + (plano.xParaPixels(0) + 8) + '" y="' + (plano.yParaPixels(estado.s0) - 9) + '" font-size="12" font-weight="700" ' + contornoPreto("#60a5fa") + ">s₀ = " + formatarNumero(estado.s0) + "</text>";
+        }
+        const posicaoFinal = estado.s0 + estado.v * 5;
+        if (posicaoFinal >= -12 && posicaoFinal <= 12) {
+          resultado += '<circle cx="' + plano.xParaPixels(5) + '" cy="' + plano.yParaPixels(posicaoFinal) + '" r="6" fill="#f59e0b" stroke="#fff" stroke-width="1.5"/>';
+          resultado += '<text x="' + (plano.xParaPixels(5) + 10) + '" y="' + (plano.yParaPixels(posicaoFinal) - 10) + '" font-size="13" font-weight="700" ' + contornoPreto("#fbbf24") + ">s(5) = " + formatarNumero(posicaoFinal) + "</text>";
+        }
+        const tempo = Date.now() / 1000;
+        const fracaoMovimento = (tempo * 0.35) % 1;
+        const tempoMovimento = inicio + fracaoMovimento * (fim - inicio);
+        const posicaoMovimento = estado.s0 + estado.v * tempoMovimento;
+        if (posicaoMovimento >= -12 && posicaoMovimento <= 12) {
+          resultado += '<circle cx="' + plano.xParaPixels(tempoMovimento) + '" cy="' + plano.yParaPixels(posicaoMovimento) + '" r="6" fill="#22c55e" stroke="#fff" stroke-width="1.5"/>';
+        }
+        svg.innerHTML = resultado;
+      }
+    };
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

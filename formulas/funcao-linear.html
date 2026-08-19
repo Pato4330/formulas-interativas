@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Função Linear · Fórmulas Interativas</title>
+  <link rel="stylesheet" href="../css/estilo.css">
+</head>
+<body>
+  <main id="app"></main>
+  <script src="../js/utilitarios.js"></script>
+  <script>
+    "use strict";
+    const formula = {
+      titulo: "Função Linear",
+      categoria: "Matemática",
+      descricao: "y = ax + b. Deslize o coeficiente angular e o termo independente para ver a reta mudar.",
+      formula: "y = ax + b",
+      cor: "#ef4444",
+      sempre: true,
+      campos: [
+        { chave: "a", rotulo: "Coef. angular (a)", cor: "#ef4444", min: -5, max: 5, passo: 0.1, padrao: 2 },
+        { chave: "b", rotulo: "Termo b", cor: "#3b82f6", min: -5, max: 5, passo: 0.1, padrao: 1 }
+      ],
+      textoAoVivo(estado) {
+        return "y = <span class=\"a\">" + formatarNumero(estado.a) + "</span>x <span class=\"b\">" + comSinal(estado.b) + "</span>";
+      },
+      desenhar(svg, estado) {
+        svg.setAttribute("viewBox", "0 0 500 500");
+        const plano = planoCartesiano(-6, 6, -8, 8);
+        let candidatos = [-6, 6];
+        const xParaAlcancar = (y) => (estado.a !== 0 ? (y - estado.b) / estado.a : null);
+        const adicionar = (v) => { if (v !== null && v >= -6 && v <= 6) candidatos.push(v); };
+        adicionar(xParaAlcancar(-8)); adicionar(xParaAlcancar(8));
+        const xMin = Math.min(...candidatos), xMax = Math.max(...candidatos);
+        const yInicio = estado.a * xMin + estado.b, yFim = estado.a * xMax + estado.b;
+        let saida = plano.grade;
+        saida += '<line x1="' + plano.xParaPixels(xMin) + '" y1="' + plano.yParaPixels(yInicio) + '" x2="' + plano.xParaPixels(xMax) + '" y2="' + plano.yParaPixels(yFim) + '" stroke="#ef4444" stroke-width="3.5" stroke-linecap="round"/>';
+        if (estado.b >= -8 && estado.b <= 8) {
+          saida += '<circle cx="' + plano.xParaPixels(0) + '" cy="' + plano.yParaPixels(estado.b) + '" r="5" fill="#3b82f6" stroke="#fff" stroke-width="1.5"/>';
+          saida += '<text x="' + (plano.xParaPixels(0) - 10) + '" y="' + (plano.yParaPixels(estado.b) - 10) + '" text-anchor="end" font-size="13" font-weight="700" ' + contornoPreto("#60a5fa") + ">(0, " + formatarNumero(estado.b) + ")</text>";
+        }
+        const yEmUm = estado.a + estado.b;
+        if (yEmUm >= -8 && yEmUm <= 8) {
+          saida += '<circle cx="' + plano.xParaPixels(1) + '" cy="' + plano.yParaPixels(yEmUm) + '" r="5.5" fill="#f59e0b" stroke="#fff" stroke-width="1.5"/>';
+          saida += '<text x="' + (plano.xParaPixels(1) + 10) + '" y="' + (plano.yParaPixels(yEmUm) - 10) + '" font-size="13" font-weight="700" ' + contornoPreto("#f59e0b") + ">(1, " + formatarNumero(yEmUm) + ")</text>";
+        }
+        const tempo = Date.now() / 1000;
+        const fracao = (tempo * 0.4) % 1;
+        const bolaX = xMin + fracao * (xMax - xMin);
+        const bolaY = estado.a * bolaX + estado.b;
+        if (bolaY >= -8 && bolaY <= 8) {
+          saida += '<circle cx="' + plano.xParaPixels(bolaX) + '" cy="' + plano.yParaPixels(bolaY) + '" r="5.5" fill="#fbbf24" stroke="#0b1020" stroke-width="1.5"/>';
+        }
+        svg.innerHTML = saida;
+      }
+    };
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

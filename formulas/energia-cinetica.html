@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Energia Cinética · Fórmulas Interativas</title>
+  <link rel="stylesheet" href="../css/estilo.css">
+</head>
+<body>
+  <main id="app"></main>
+  <script src="../js/utilitarios.js"></script>
+  <script>
+    "use strict";
+    const formula = {
+      titulo: "Energia Cinética",
+      descricao: "A energia de movimento: Ec = ½·m·v². Note que ela cresce com o quadrado da velocidade.",
+      formula: "Ec = ½·m·v²",
+      cor: "#22c55e",
+      sempre: true,
+      campos: [
+        { chave: "massa", rotulo: "Massa (m)", cor: "#3b82f6", min: 1, max: 20, passo: 0.1, padrao: 5 },
+        { chave: "velocidade", rotulo: "Velocidade (v)", cor: "#22c55e", min: 0, max: 30, passo: 0.5, padrao: 10 }
+      ],
+      calcular(estado) { estado.energiaCinetica = 0.5 * estado.massa * estado.velocidade * estado.velocidade; },
+      textoAoVivo(estado) { return "Ec = ½ · <span class=\"b\">" + formatarNumero(estado.massa) + "</span> · <span class=\"c\">" + formatarNumero(estado.velocidade) + "</span>² = <b>" + formatarNumero(estado.energiaCinetica) + " J</b>"; },
+      desenhar(svg, estado) {
+        svg.setAttribute("viewBox", "0 0 480 360");
+        const tempo = Date.now() / 1000;
+        const larguraBarra = 300, alturaBarra = 44, xBarra = 90, yBarra = 250;
+        const preenchimento = Math.min(estado.energiaCinetica / 9000, 1);
+        const xPreenchido = xBarra + larguraBarra * preenchimento;
+        const oscilacaoBola = Math.sin(tempo * (0.6 + estado.velocidade * 0.12)) * (larguraBarra / 2 - 26);
+        const xBrilho = xBarra + larguraBarra * ((tempo * 0.45) % 1);
+        svg.innerHTML =
+          '<rect x="' + xBarra + '" y="' + yBarra + '" width="' + larguraBarra + '" height="' + alturaBarra + '" rx="12" fill="rgba(255,255,255,0.06)" stroke="#64748b" stroke-width="2"/>' +
+          '<rect x="' + xBarra + '" y="' + yBarra + '" width="' + xPreenchido + '" height="' + alturaBarra + '" rx="12" fill="#22c55e"/>' +
+          (preenchimento > 0 ? '<rect x="' + xBrilho + '" y="' + (yBarra + 6) + '" width="26" height="' + (alturaBarra - 12) + '" rx="8" fill="rgba(255,255,255,0.28)"/>' : "") +
+          '<circle cx="' + (xBarra + larguraBarra / 2 + oscilacaoBola) + '" cy="' + (yBarra - 60) + '" r="16" fill="#ef4444" stroke="#fff" stroke-width="2"/>' +
+          '<line x1="' + (xBarra + larguraBarra / 2 + oscilacaoBola - 34) + '" y1="' + (yBarra - 60) + '" x2="' + (xBarra + larguraBarra / 2 + oscilacaoBola - 60) + '" y2="' + (yBarra - 60) + '" stroke="#f87171" stroke-width="3" stroke-linecap="round"/>' +
+          '<line x1="' + (xBarra + larguraBarra / 2 + oscilacaoBola + 34) + '" y1="' + (yBarra - 60) + '" x2="' + (xBarra + larguraBarra / 2 + oscilacaoBola + 60) + '" y2="' + (yBarra - 60) + '" stroke="#f87171" stroke-width="3" stroke-linecap="round"/>' +
+          '<text x="' + (xBarra + larguraBarra / 2) + '" y="' + (yBarra + alturaBarra + 30) + '" text-anchor="middle" font-size="17" font-weight="800" ' + contornoPreto("#4ade80") + ">Ec = " + formatarNumero(estado.energiaCinetica) + " J</text>" +
+          '<text x="' + xBarra + '" y="' + (yBarra - 12) + '" font-size="13" font-weight="700" ' + contornoPreto("#93c5fd") + ">m = " + formatarNumero(estado.massa) + " kg</text>" +
+          '<text x="' + (xBarra + larguraBarra) + '" y="' + (yBarra - 12) + '" text-anchor="end" font-size="13" font-weight="700" ' + contornoPreto("#86efac") + ">v = " + formatarNumero(estado.velocidade) + " m/s</text>";
+      }
+    };
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

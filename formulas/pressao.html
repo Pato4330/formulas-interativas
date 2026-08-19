@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pressão · Fórmulas Interativas</title>
+  <link rel="stylesheet" href="../css/estilo.css">
+</head>
+<body>
+  <main id="app"></main>
+  <script src="../js/utilitarios.js"></script>
+  <script>
+    "use strict";
+    const formula = {
+      titulo: "Pressão",
+      descricao: "A pressão é a força distribuída pela área: P = F/A.",
+      formula: "P = F / A",
+      cor: "#3b82f6",
+      sempre: true,
+      campos: [
+        { chave: "forca", rotulo: "Força (F)", cor: "#3b82f6", min: 1, max: 100, passo: 1, padrao: 50 },
+        { chave: "area", rotulo: "Área (A)", cor: "#ef4444", min: 1, max: 100, passo: 1, padrao: 10 }
+      ],
+      calcular(estado) { estado.pressao = estado.forca / estado.area; },
+      textoAoVivo(estado) { return "P = <span class=\"b\">" + formatarNumero(estado.forca) + "</span> / <span class=\"a\">" + formatarNumero(estado.area) + "</span> = <b>" + formatarNumero(estado.pressao) + " N/m²</b>"; },
+      desenhar(svg, estado) {
+        svg.setAttribute("viewBox", "0 0 500 380");
+        const tempo = Date.now() / 1000;
+        const larguraTanque = 60 + (limitar(estado.area, 1, 100) / 100) * 240;
+        const centroX = 250, topo = 90, base = 300;
+        const comprimentoBloco = Math.min(estado.pressao / 100, 1) * 120 + 40 + Math.sin(tempo * 4) * 4;
+        const quantidadeParticulas = Math.round(limitar(estado.forca / 10, 3, 15));
+        const velocidadeParticulas = 0.7 + estado.pressao / 60;
+        let desenho =
+          '<line x1="40" y1="' + base + '" x2="460" y2="' + base + '" stroke="#cbd5e1" stroke-width="3"/>' +
+          '<rect x="' + (centroX - larguraTanque / 2) + '" y="' + topo + '" width="' + larguraTanque + '" height="' + (base - topo) + '" fill="rgba(96,165,250,0.10)" stroke="#3b82f6" stroke-width="3"/>' +
+          '<line x1="' + centroX + '" y1="' + (topo - 6) + '" x2="' + centroX + '" y2="' + (topo - comprimentoBloco) + '" stroke="#ef4444" stroke-width="5" stroke-linecap="round"/>' +
+          '<polygon points="' + centroX + "," + (topo - comprimentoBloco) + " " + (centroX - 12) + "," + (topo - comprimentoBloco + 18) + " " + (centroX + 12) + "," + (topo - comprimentoBloco + 18) + '" fill="#ef4444"/>' +
+          '<text x="' + centroX + '" y="' + (topo - comprimentoBloco - 14) + '" text-anchor="middle" font-size="16" font-weight="800" ' + contornoPreto("#f87171") + ">F = " + formatarNumero(estado.forca) + " N</text>" +
+          '<text x="' + centroX + '" y="' + (base + 28) + '" text-anchor="middle" font-size="14" font-weight="700" ' + contornoPreto("#60a5fa") + ">A = " + formatarNumero(estado.area) + " m²</text>" +
+          '<text x="' + (centroX - larguraTanque / 2 + 10) + '" y="' + (topo + 30) + '" font-size="13" font-weight="800" ' + contornoPreto("#4ade80") + ">P = " + formatarNumero(estado.pressao) + " N/m²</text>";
+        for (let i = 0; i < quantidadeParticulas; i++) {
+          const xParticula = (centroX - larguraTanque / 2) + 16 + ((Math.sin(tempo * velocidadeParticulas * (0.9 + (i % 3) * 0.14) + i * 2.1) + 1) / 2) * (larguraTanque - 32);
+          const yParticula = topo + 16 + ((Math.cos(tempo * velocidadeParticulas * (1.1 + (i % 4) * 0.12) + i * 1.7) + 1) / 2) * (base - topo - 32);
+          desenho += '<circle cx="' + xParticula.toFixed(1) + '" cy="' + yParticula.toFixed(1) + '" r="5" fill="rgba(96,165,250,0.55)" stroke="rgba(147,197,253,0.8)" stroke-width="1"/>';
+        }
+        svg.innerHTML = desenho;
+      }
+    };
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>
