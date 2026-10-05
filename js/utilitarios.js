@@ -79,12 +79,12 @@ function planoCartesiano(xMin, xMax, yMin, yMax) {
   // Números no eixo X
   for (let x = Math.ceil(xMin); x <= Math.floor(xMax); x++) {
     if (x === 0) continue;
-    grade += '<text x="' + xParaPixels(x).toFixed(2) + '" y="' + (yParaPixels(0) + 18) + '" text-anchor="middle" font-size="11" fill="#94a3b8">' + x + "</text>";
+    grade += '<text x="' + xParaPixels(x).toFixed(2) + '" y="' + (yParaPixels(0) + 18) + '" text-anchor="middle" font-size="8" fill="#94a3b8">' + x + "</text>";
   }
   // Números no eixo Y
   for (let y = Math.ceil(yMin); y <= Math.floor(yMax); y++) {
     if (y === 0) continue;
-    grade += '<text x="' + (xParaPixels(0) - 7) + '" y="' + (yParaPixels(y) + 4).toFixed(2) + '" text-anchor="end" font-size="11" fill="#94a3b8">' + y + "</text>";
+    grade += '<text x="' + (xParaPixels(0) - 7) + '" y="' + (yParaPixels(y) + 4).toFixed(2) + '" text-anchor="end" font-size="8" fill="#94a3b8">' + y + "</text>";
   }
 
   return { grade, xParaPixels, yParaPixels };
